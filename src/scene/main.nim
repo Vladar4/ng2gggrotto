@@ -5,15 +5,19 @@ import
     scene,
     settings,
     types,
-  ]
+  ],
+  ../map
 
 
 type
   MainScene = ref object of Scene
+    map: Map
 
 
 proc init*(scene: MainScene) =
   init Scene(scene)
+  scene.map = newMap()
+  scene.add scene.map
 
 
 proc free*(scene: MainScene) =

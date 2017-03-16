@@ -10,12 +10,14 @@ import
 
 
 const
-  GameTitle* = "Glorious Glacier Grotto"
-  GameIcon* = "" #TODO "gggrotto.png"
-  GameVersion* = "0.1 alpha"
-  GameWidth* = 960
-  GameHeight* = 600
-  DefaultFont* = "data/fnt/FSEX300.ttf"
+  GameTitle*    = "Glorious Glacier Grotto"
+  GameIcon*     = "" #TODO "gggrotto.png"
+  GameVersion*  = "0.1 alpha"
+  GameWidth*    = 960
+  GameHeight*   = 600
+  DefaultFont*  = "data/fnt/FSEX300.ttf"
+  SpriteDim*: Dim     = (20, 20)
+  SpriteOffset*: Dim  = (0, 0)
 
 
 var
