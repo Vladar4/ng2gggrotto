@@ -14,7 +14,7 @@ import
 type
   Map* = ref object of TileMap
 
-  Tile {.pure.} = enum
+  Tile = enum
     flr # floor
     u1
     u2
@@ -32,7 +32,8 @@ type
     cDL # corner down-left
     cDR # corner down-right
 
-  Triad = array[0..2, array[0..2, Tile]]
+  Triad = enum
+    UD, LR, UL, UR, DL, DR, UDL, UDR, ULR, DLR, UDLR
 
 
 converter toInt(tile: Tile): int =
@@ -40,39 +41,42 @@ converter toInt(tile: Tile): int =
 
 
 const
-  UD    = [ [Tile.wL , Tile.flr, Tile.wR ],
-            [Tile.wL , Tile.flr, Tile.wR ],
-            [Tile.wL , Tile.flr, Tile.wR ] ]
-  LR    = [ [Tile.wU , Tile.wU , Tile.wU ],
-            [Tile.flr, Tile.flr, Tile.flr],
-            [Tile.wD , Tile.wD , Tile.wD ] ]
-  UL    = [ [Tile.tUL, Tile.flr, Tile.wR ],
-            [Tile.flr, Tile.flr, Tile.wR ],
-            [Tile.wU , Tile.wD , Tile.cUL] ]
-  UR    = [ [Tile.wL , Tile.flr, Tile.wR ],
-            [Tile.wL , Tile.flr, Tile.flr],
-            [Tile.cUR, Tile.wD , Tile.wD ] ]
-  DL    = [ [Tile.wU , Tile.wU , Tile.cDL],
-            [Tile.flr, Tile.flr, Tile.wR ],
-            [Tile.wD , Tile.tDL, Tile.wR ] ]
-  DR    = [ [Tile.cDR, Tile.wU , Tile.wU ],
-            [Tile.wL , Tile.flr, Tile.flr],
-            [Tile.wL , Tile.flr, Tile.tDR] ]
-  UDL   = [ [Tile.tUL, Tile.flr, Tile.wR ],
-            [Tile.flr, Tile.flr, Tile.wR ],
-            [Tile.tDL, Tile.flr, Tile.wR ] ]
-  UDR   = [ [Tile.wL , Tile.flr, Tile.tUR],
-            [Tile.wL , Tile.flr, Tile.flr],
-            [Tile.wL , Tile.flr, Tile.tDR] ]
-  ULR   = [ [Tile.tUL, Tile.flr, Tile.tUR],
-            [Tile.flr, Tile.flr, Tile.flr],
-            [Tile.wD , Tile.wD , Tile.wD ] ]
-  DLR   = [ [Tile.wU , Tile.wU , Tile.wU ],
-            [Tile.flr, Tile.flr, Tile.flr],
-            [Tile.tDL, Tile.flr, Tile.tDR] ]
-  UDLR  = [ [Tile.tUL, Tile.flr, Tile.tUR],
-            [Tile.flr, Tile.flr, Tile.flr],
-            [Tile.tDL, Tile.flr, Tile.tDR] ]
+  Triads = [
+    [ [wL , flr, wR ],  # UD
+      [wL , flr, wR ],
+      [wL , flr, wR ] ],
+    [ [wU , wU , wU ],  # LR
+      [flr, flr, flr],
+      [wD , wD , wD ] ],
+    [ [tUL, flr, wR ],  # UL
+      [flr, flr, wR ],
+      [wD , wD , cDR] ],
+    [ [wL , flr, tUR],  # UR
+      [wL , flr, flr],
+      [cDL, wD , wD ] ],
+    [ [wU , wU , cUR],  # DL
+      [flr, flr, wR ],
+      [tDL, flr, wR ] ],
+    [ [cUL, wU , wU ],  # DR
+      [wL , flr, flr],
+      [wL , flr, tDR] ],
+    [ [tUL, flr, wR ],  # UDL
+      [flr, flr, wR ],
+      [tDL, flr, wR ] ],
+    [ [wL , flr, tUR],  # UDR
+      [wL , flr, flr],
+      [wL , flr, tDR] ],
+    [ [tUL, flr, tUR],  # ULR
+      [flr, flr, flr],
+      [wD , wD , wD ] ],
+    [ [wU , wU , wU ],  # DLR
+      [flr, flr, flr],
+      [tDL, flr, tDR] ],
+    [ [tUL, flr, tUR],  # UDLR
+      [flr, flr, flr],
+      [tDL, flr, tDR] ]
+  ]
+  TriadsAll = {UD, LR, UL, DR, DL, DR, UDL, UDR, ULR, DLR, UDLR}
   MapTileWidth    = 48
   MapTileHeight   = 30
   MapTriadWidth   = MapTileWidth  div 3
@@ -92,7 +96,7 @@ template invalidTriadIndex(idx: Dim): bool =
   ( idx.w < 0 or
     idx.h < 0 or
     idx.w >= MapTriadWidth or
-    idx.h >= MapTriadHeight)
+    idx.h >= MapTriadHeight )
 
 
 proc set*(map: Map, idx: Dim, triad: Triad) =
@@ -102,7 +106,7 @@ proc set*(map: Map, idx: Dim, triad: Triad) =
   let start = idx * 3
   for y in 0..2:
     for x in 0..2:
-      map.map[start.h + y][start.w + x] = triad[y][x]
+      map.map[start.h + y][start.w + x] = Triads[int(triad)][y][x]
 
 
 proc init*(map: Map) =
@@ -110,6 +114,8 @@ proc init*(map: Map) =
   map.graphic = gfxData["tiles"]
   map.initSprite SpriteDim, SpriteOffset
   map.clear()
+  map.set((1, 1), UDLR)
+
 
 
 proc free*(map: Map) =
