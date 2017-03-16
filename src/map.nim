@@ -7,6 +7,7 @@ import
     tilemap,
     settings,
     types,
+    utils
   ],
   data
 
@@ -76,7 +77,15 @@ const
       [flr, flr, flr],
       [tDL, flr, tDR] ]
   ]
-  TriadsAll = {UD, LR, UL, DR, DL, DR, UDL, UDR, ULR, DLR, UDLR}
+  TriadsAll = {UD, LR, UL, UR, DL, DR, UDL, UDR, ULR, DLR, UDLR}
+  TriadsU   = {UD, UL, UR, UDL, UDR, ULR, UDLR}
+  TriadsD   = {UD, DL, DR, UDL, UDR, DLR, UDLR}
+  TriadsL   = {LR, UL, DL, UDL, ULR, DLR, UDLR}
+  TriadsR   = {LR, UR, DR, UDR, ULR, DLR, UDLR}
+  TriadsNoU = {LR, DL, DR, DLR}
+  TriadsNoD = {LR, UL, UR, ULR}
+  TriadsNoL = {UD, UR, DR, UDR}
+  TriadsNoR = {UD, UL, DL, UDL}
   MapTileWidth    = 48
   MapTileHeight   = 30
   MapTriadWidth   = MapTileWidth  div 3
@@ -114,8 +123,18 @@ proc init*(map: Map) =
   map.graphic = gfxData["tiles"]
   map.initSprite SpriteDim, SpriteOffset
   map.clear()
-  map.set((1, 1), UDLR)
-
+  for y in 0..<MapTriadHeight:
+    for x in 0..<MapTriadWidth:
+      var choice = TriadsAll
+      if x == 0:
+        choice = choice - TriadsL
+      if y == 0:
+        choice = choice - TriadsU
+      if x == MapTriadWidth - 1:
+        choice = choice - TriadsR
+      if y == MapTriadHeight - 1:
+        choice = choice - TriadsD
+      map.set((x, y), random choice)
 
 
 proc free*(map: Map) =
