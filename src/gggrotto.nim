@@ -1,18 +1,30 @@
 import
   nimgame2 / [
     nimgame,
-    settings
+    settings,
   ],
   data,
-  scene/intro
+  scene / [
+    intro,
+    title,
+    main,
+  ]
 
 
 game = newGame()
 if game.init(GameWidth, GameHeight,
              title = GameTitle,
              icon = GameIcon):
+  # Init
   game.setResizable(true)
-  game.minSize = (480, 300)
-  game.scene = newIntroScene()
-  game.run
+  game.minSize = (GameWidth div 2, int GameHeight div 2)
+  game.centrify()
+  loadData()
+  # Scenes
+  introScene = newIntroScene()
+  titleScene = newTitleScene()
+  mainScene  = newMainScene()
+  # Run
+  game.scene = introScene
+  run game
 

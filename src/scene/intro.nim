@@ -4,7 +4,7 @@ import
     entity,
     scene,
     settings,
-    types
+    types,
   ],
   ../data,
   title
@@ -16,8 +16,6 @@ type
 
 proc init*(scene: IntroScene) =
   init Scene(scene)
-  titleScene = newTitleScene()
-  game.scene = titleScene #TODO remove
 
 
 proc free*(scene: IntroScene) =
@@ -27,4 +25,9 @@ proc free*(scene: IntroScene) =
 proc newIntroScene*(): IntroScene =
   new result, free
   init result
+
+
+method update*(scene: IntroScene, elapsed: float) =
+  scene.updateScene elapsed
+  game.scene = titleScene
 
