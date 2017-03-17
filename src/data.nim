@@ -2,6 +2,7 @@ import
   nimgame2 / [
     assets,
     audio,
+    input,
     scene,
     texturegraphic,
     truetypefont,
@@ -25,6 +26,10 @@ var
   defaultFont*: TrueTypeFont
   gfxData*: Assets[TextureGraphic]
   #TODO sfxData*: Assets[Sound]
+  moveUp* = [ScancodeUp, ScancodeW]
+  moveDown* = [ScancodeDown, ScancodeS]
+  moveLeft* = [ScancodeLeft, ScancodeA]
+  moveRight* = [ScancodeRight, ScancodeR]
 
 proc loadData*() =
   # Font

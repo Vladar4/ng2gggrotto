@@ -105,11 +105,11 @@ const
   TriadsNoD = {NONE, U, L, R, LR, UL, UR, ULR}
   TriadsNoL = {NONE, U, D, R, UD, UR, DR, UDR}
   TriadsNoR = {NONE, U, D, L, UD, UL, DL, UDL}
-  MapTileWidth    = 48
-  MapTileHeight   = 30
-  MapTriadWidth   = MapTileWidth  div 3
-  MapTriadHeight  = MapTileHeight div 3
-  MapCenter: Dim  = (MapTriadWidth div 2, MapTriadHeight div 2)
+  MapTileWidth*   = 48
+  MapTileHeight*  = 30
+  MapTriadWidth*  = MapTileWidth  div 3
+  MapTriadHeight* = MapTileHeight div 3
+  MapCenter*: Dim = (MapTriadWidth div 2, MapTriadHeight div 2)
   MinimalMapSize  = int(MapTriadWidth * MapTriadHeight * 0.75)
 
 
@@ -153,6 +153,8 @@ proc generate*(t: var TriadGrid,
                x = MapCenter.w,
                y = MapCenter.h) =
   var choice = TriadsAll - {NONE}
+  if (x == MapCenter.w) and (y == MapCenter.h):
+    choice = choice - {U, D, L, R}
 
   # top
   if y > 0:
@@ -284,7 +286,6 @@ proc generate*(map: Map, minimalSize = MinimalMapSize,
                 else: choice * TriadsNoD
       choice =  if t in TriadsL: choice * TriadsL
                 else: choice * TriadsNoL
-    echo "C: ", choice
     result = random choice
 
   var
