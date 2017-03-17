@@ -20,6 +20,7 @@ const
 type
   Control* {.pure.} = enum none, player, ai
   Direction* = enum dStay, dUp, dDown, dLeft, dRight
+  MapPos* = tuple[x, y: int]
 
   Creature* = ref object of Entity
     control*: Control
@@ -27,14 +28,18 @@ type
     prevDirection*: Direction
     tween: Tween[Creature,Coord]
     map*: Map
-    mapPos*: tuple[x, y: int]
+    mapPos*: MapPos
 
 
-proc toMapPos(pos: Coord, size = SpriteSize): tuple[x, y: int] {.inline.} =
+proc toCoord(pos: MapPos): Coord {.inline.} =
+  (pos.x * SpriteDim.w + 1, pos.y * SpriteDim.h + 1)
+
+
+proc toMapPos(pos: Coord, size = SpriteSize): MapPos {.inline.} =
   (int(pos.x / size.w.float), int(pos.y / size.h.float))
 
 
-proc init*(c: Creature, graphic: TextureGraphic, map: Map) =
+proc init*(c: Creature, graphic: TextureGraphic, mapPos: MapPos, map: Map) =
   c.initEntity()
   c.tags.add("creature")
   c.graphic = graphic
@@ -46,11 +51,13 @@ proc init*(c: Creature, graphic: TextureGraphic, map: Map) =
   c.center = (1, 1)
   c.speed = DefaultSpeed
   c.map = map
+  c.mapPos = mapPos
+  c.pos = mapPos.toCoord
 
 
-proc newCreature*(graphic: TextureGraphic, map: Map): Creature =
+proc newCreature*(graphic: TextureGraphic, mapPos: MapPos, map: Map): Creature =
   new result
-  init result, graphic, map
+  init result, graphic, mapPos, map
 
 
 proc dirAvailable(c: Creature, dir: Direction): bool =
@@ -100,7 +107,7 @@ proc move*(c: Creature, dir: Direction) =
   if c.tween == nil or not c.tween.playing:
     let
       newPos = c.pos + mov
-      newMapPos: tuple[x, y: int] = toMapPos(newPos)
+      newMapPos = toMapPos(newPos)
 
     c.play(anim, 1)
     c.tween = newTween[Creature,Coord](

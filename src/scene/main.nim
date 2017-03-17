@@ -23,12 +23,10 @@ proc init*(scene: MainScene) =
   # map
   scene.map = newMap()
   # player
-  scene.player = newCreature(gfxData["player"], scene.map)
+  scene.player = newCreature(gfxData["player"],
+                             (MapTileWidth div 2 + 1, MapTileHeight div 2 + 1),
+                             scene.map)
   scene.player.control = Control.player
-  scene.player.pos = (MapTileWidth, MapTileHeight) / 2 * SpriteDim +
-                     SpriteDim + (1, 1)
-  scene.player.mapPos = (scene.player.pos.x.int div SpriteDim.w,
-                         scene.player.pos.y.int div SpriteDim.h)
 
   # add to scene
   scene.add scene.player
