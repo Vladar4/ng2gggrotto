@@ -312,18 +312,22 @@ proc generate*(map: Map, minimalSize = MinimalMapSize,
     map.generate(minimalSize, exitT, exitD, exitL, exitR)
     return
 
+  proc middle(s: seq[int]): int =
+    let mid = s.len div 2
+    random([s[mid-1], s[mid]])
+
   # add exits
   if exitT:
-    let x = random up
+    let x = middle up
     t[0][x] = addRoute(t[0][x], rU)
   if exitD:
-    let x = random down
+    let x = middle down
     t[MapTriadHeight-1][x] = addRoute(t[MapTriadHeight-1][x], rD)
   if exitL:
-    let y = random left
+    let y = middle left
     t[y][0] = addRoute(t[y][0], rL)
   if exitR:
-    let y = random right
+    let y = middle right
     t[y][MapTriadWidth-1] = addRoute(t[y][MapTriadWidth-1], rR)
 
   # fill map

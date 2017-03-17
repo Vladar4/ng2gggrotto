@@ -119,7 +119,6 @@ proc move*(c: Creature, dir: Direction) =
     c.tween.play()
     c.mapPos = newMapPos
     c.prevDirection = dir
-    echo c.mapPos
 
 
 method update*(c: Creature, elapsed: float) =
