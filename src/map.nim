@@ -18,8 +18,8 @@ type
   Tile = enum
     flr # floor
     non
-    u2
-    u3
+    u0
+    und
     wU  # wall up
     wD  # wall down
     wL  # wall left
@@ -34,7 +34,7 @@ type
     cDR # corner down-right
 
   Triad = enum
-    NONE, UD, LR, UL, UR, DL, DR, UDL, UDR, ULR, DLR, UDLR
+    UND, NONE, U, D, L, R, UD, LR, UL, UR, DL, DR, UDL, UDR, ULR, DLR, UDLR
 
 
 converter toInt(tile: Tile): int =
@@ -43,9 +43,24 @@ converter toInt(tile: Tile): int =
 
 const
   Triads = [
+    [ [und, und, und],  # UND
+      [und, und, und],
+      [und, und, und] ],
     [ [non, non, non],  # NONE
       [non, non, non],
       [non, non, non] ],
+    [ [wL , flr, wR ],  # U
+      [wL , flr, wR ],
+      [cDL, wD , cDR] ],
+    [ [cUL, wU , cUR],  # D
+      [wL , flr, wR ],
+      [wL , flr, wR ] ],
+    [ [wU , wU , cUR],  # L
+      [flr, flr, wR ],
+      [wD , wD , cDR] ],
+    [ [cUL, wU , wU ],  # R
+      [wL , flr, flr],
+      [cDL, wD , wD ] ],
     [ [wL , flr, wR ],  # UD
       [wL , flr, wR ],
       [wL , flr, wR ] ],
@@ -80,19 +95,30 @@ const
       [flr, flr, flr],
       [tDL, flr, tDR] ]
   ]
-  TriadsAll = {NONE, UD, LR, UL, UR, DL, DR, UDL, UDR, ULR, DLR, UDLR}
-  TriadsU   = {UD, UL, UR, UDL, UDR, ULR, UDLR}
-  TriadsD   = {UD, DL, DR, UDL, UDR, DLR, UDLR}
-  TriadsL   = {LR, UL, DL, UDL, ULR, DLR, UDLR}
-  TriadsR   = {LR, UR, DR, UDR, ULR, DLR, UDLR}
-  TriadsNoU = {NONE, LR, DL, DR, DLR}
-  TriadsNoD = {NONE, LR, UL, UR, ULR}
-  TriadsNoL = {NONE, UD, UR, DR, UDR}
-  TriadsNoR = {NONE, UD, UL, DL, UDL}
+  TriadsAll = {NONE, U, D, L, R, UD, LR, UL, UR, DL, DR, UDL, UDR, ULR, DLR, UDLR}
+  TriadsU   = {U, UD, UL, UR, UDL, UDR, ULR, UDLR}
+  TriadsD   = {D, UD, DL, DR, UDL, UDR, DLR, UDLR}
+  TriadsL   = {L, LR, UL, DL, UDL, ULR, DLR, UDLR}
+  TriadsR   = {R, LR, UR, DR, UDR, ULR, DLR, UDLR}
+  TriadsNoU = {NONE, D, L, R, LR, DL, DR, DLR}
+  TriadsNoD = {NONE, U, L, R, LR, UL, UR, ULR}
+  TriadsNoL = {NONE, U, D, R, UD, UR, DR, UDR}
+  TriadsNoR = {NONE, U, D, L, UD, UL, DL, UDL}
   MapTileWidth    = 48
   MapTileHeight   = 30
   MapTriadWidth   = MapTileWidth  div 3
   MapTriadHeight  = MapTileHeight div 3
+  MinimalMapSize  = int(MapTriadWidth * MapTriadHeight * 0.75)
+
+
+type
+  TriadGrid = array[MapTriadHeight, array[MapTriadWidth, Triad]]
+
+
+proc init(t: var TriadGrid) =
+  for y in 0..<MapTriadHeight:
+    for x in 0..<MapTriadWidth:
+      t[y][x] = UND
 
 
 proc clear*(map: Map) =
@@ -100,7 +126,7 @@ proc clear*(map: Map) =
   for y in 0..<MapTileHeight:
     var line: seq[int] = @[]
     for x in 0..<MapTileWidth:
-      line.add 0
+      line.add und
     map.map.add line
 
 
@@ -121,40 +147,103 @@ proc set*(map: Map, idx: Dim, triad: Triad) =
       map.map[start.h + y][start.w + x] = Triads[int(triad)][y][x]
 
 
-proc init*(map: Map) =
-  init TileMap(map)
-  map.graphic = gfxData["tiles"]
-  map.initSprite SpriteDim, SpriteOffset
-  map.clear()
-  var t: array[MapTriadHeight, array[MapTriadWidth, Triad]]
-  for y in 0..<MapTriadHeight:
-    for x in 0..<MapTriadWidth:
-      var choice = TriadsAll
-      # x
-      if x == 0:
-        choice = choice - TriadsL
-      elif t[y][x-1] in TriadsR:
-          choice = choice - TriadsNoL
-      else:
-        echo choice
-        choice = choice - TriadsL
-      if x == MapTriadWidth - 1:
-        choice = choice - TriadsR
-      # y
-      if y == 0:
-        choice = choice - TriadsU
-      elif t[y-1][x] in TriadsD:
+proc generate*(t: var TriadGrid,
+               x = MapTriadWidth div 2,
+               y = MapTriadHeight div 2) =
+  var choice = TriadsAll - {NONE}
+
+  # top
+  if y > 0:
+    let top = t[y-1][x]
+    if top != UND:
+      if top in TriadsD:
         choice = choice - TriadsNoU
       else:
-        echo choice
         choice = choice - TriadsU
-      if y == MapTriadHeight - 1:
+  else: # top border
+    choice = choice - TriadsU
+
+  # down
+  if y < (MapTriadHeight - 1):
+    let down = t[y+1][x]
+    if down != UND:
+      if down in TriadsU:
+        choice = choice - TriadsNoD
+      else:
         choice = choice - TriadsD
-      t[y][x] = random choice
+  else: # bottom border
+    choice = choice - TriadsD
+
+  # left
+  if x > 0:
+    let left = t[y][x-1]
+    if left != UND:
+      if left in TriadsR:
+        choice = choice - TriadsNoL
+      else:
+        choice = choice - TriadsL
+  else: # left border
+    choice = choice - TriadsL
+
+  # right
+  if x < (MapTriadWidth - 1):
+    let right = t[y][x+1]
+    if right != UND:
+      if right in TriadsL:
+        choice = choice - TriadsNoR
+      else:
+        choice = choice - TriadsR
+  else: # right border
+    choice = choice - TriadsR
+
+  if choice == {}:
+    # should never happen
+    choice = {UND}
+  t[y][x] = random choice
+
+  # recursive
+  let current = t[y][x]
+  if (current in TriadsU) and (y > 0):
+    if t[y-1][x] == UND:
+      t.generate(x, y-1)
+  if (current in TriadsD) and (y < (MapTriadHeight - 1)):
+    if t[y+1][x] == UND:
+      t.generate(x, y+1)
+  if (current in TriadsL) and (x > 0):
+    if t[y][x-1] == UND:
+      t.generate(x-1, y)
+  if (current in TriadsR) and (x < (MapTriadWidth - 1)):
+    if t[y][x+1] == UND:
+      t.generate(x+1, y)
+
+
+proc generate*(map: Map, minimalSize = MinimalMapSize) =
+  var t: TriadGrid
+  init t
+  generate t
+  map.clear()
+  # check
+  var counter = 0
+  for y in 0..<MapTriadHeight:
+    for x in 0..<MapTriadWidth:
+      if t[y][x] == UND:
+        t[y][x] = NONE
+      else:
+        inc counter
+  if counter < minimalSize:
+    map.generate()
+    return
 
   for y in 0..<MapTriadHeight:
     for x in 0..<MapTriadWidth:
       map.set((x, y), t[y][x])
+
+
+proc init*(map: Map) =
+  init TileMap(map)
+  map.graphic = gfxData["tiles"]
+  map.initSprite SpriteDim, SpriteOffset
+  map.generate()
 
 
 proc free*(map: Map) =
@@ -164,4 +253,13 @@ proc free*(map: Map) =
 proc newMap*(): Map =
   new result, free
   init result
+
+
+method event*(map: Map, event: Event) =
+  if event.kind == KeyDown:
+    case event.key.keysym.sym:
+    of K_R:
+      map.generate()
+    else:
+      discard
 
