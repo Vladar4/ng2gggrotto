@@ -1,4 +1,5 @@
 import
+  random,
   nimgame2 / [
     assets,
     entity,
@@ -108,6 +109,7 @@ const
   MapTileHeight   = 30
   MapTriadWidth   = MapTileWidth  div 3
   MapTriadHeight  = MapTileHeight div 3
+  MapCenter: Dim  = (MapTriadWidth div 2, MapTriadHeight div 2)
   MinimalMapSize  = int(MapTriadWidth * MapTriadHeight * 0.75)
 
 
@@ -148,8 +150,8 @@ proc set*(map: Map, idx: Dim, triad: Triad) =
 
 
 proc generate*(t: var TriadGrid,
-               x = MapTriadWidth div 2,
-               y = MapTriadHeight div 2) =
+               x = MapCenter.w,
+               y = MapCenter.h) =
   var choice = TriadsAll - {NONE}
 
   # top
@@ -217,12 +219,14 @@ proc generate*(t: var TriadGrid,
       t.generate(x+1, y)
 
 
-proc generate*(map: Map, minimalSize = MinimalMapSize) =
+proc generate*(map: Map, minimalSize = MinimalMapSize,
+               exitT = true, exitD = true,
+               exitL = true, exitR = true) =
   var t: TriadGrid
   init t
   generate t
-  map.clear()
-  # check
+
+  # check size
   var counter = 0
   for y in 0..<MapTriadHeight:
     for x in 0..<MapTriadWidth:
@@ -231,9 +235,98 @@ proc generate*(map: Map, minimalSize = MinimalMapSize) =
       else:
         inc counter
   if counter < minimalSize:
-    map.generate()
+    map.generate(minimalSize, exitT, exitD, exitL, exitR)
     return
 
+  # create exits
+  type Route = enum rU, rD, rL, rR
+  proc addRoute(t: Triad, route: Route): Triad =
+    result = t
+    var choice = TriadsAll - {NONE}
+    case route:
+    of rU:
+      if t in TriadsU:
+        return
+      choice = choice - TriadsNoU
+      choice =  if t in TriadsD: choice * TriadsD
+                else: choice * TriadsNoD
+      choice =  if t in TriadsL: choice * TriadsL
+                else: choice * TriadsNoL
+      choice =  if t in TriadsR: choice * TriadsR
+                else: choice * TriadsNoR
+    of rD:
+      if t in TriadsD:
+        return
+      choice = choice - TriadsNoD
+      choice =  if t in TriadsU: choice * TriadsU
+                else: choice * TriadsNoU
+      choice =  if t in TriadsL: choice * TriadsL
+                else: choice * TriadsNoL
+      choice =  if t in TriadsR: choice * TriadsR
+                else: choice * TriadsNoR
+    of rL:
+      if t in TriadsL:
+        return
+      choice = choice - TriadsNoL
+      choice =  if t in TriadsU: choice * TriadsU
+                else: choice * TriadsNoU
+      choice =  if t in TriadsD: choice * TriadsD
+                else: choice * TriadsNoD
+      choice =  if t in TriadsR: choice * TriadsR
+                else: choice * TriadsNoR
+    of rR:
+      if t in TriadsR:
+        return
+      choice = choice - TriadsNoR
+      choice =  if t in TriadsU: choice * TriadsU
+                else: choice * TriadsNoU
+      choice =  if t in TriadsD: choice * TriadsD
+                else: choice * TriadsNoD
+      choice =  if t in TriadsL: choice * TriadsL
+                else: choice * TriadsNoL
+    echo "C: ", choice
+    result = random choice
+
+  var
+    up: seq[int] = @[]
+    down: seq[int] = @[]
+    left: seq[int] = @[]
+    right: seq[int] = @[]
+  for x in 0..<MapTriadWidth:
+    if t[0][x] != NONE:
+      up.add x
+    if t[MapTriadHeight-1][x] != NONE:
+      down.add x
+  for y in 0..<MapTriadHeight:
+    if t[y][0] != NONE:
+      left.add y
+    if t[y][MapTriadWidth-1] != NONE:
+      right.add y
+
+  # check for exits
+  if (exitT and up.len < 1) or
+     (exitD and down.len < 1) or
+     (exitL and left.len < 1) or
+     (exitR and right.len < 1):
+    map.generate(minimalSize, exitT, exitD, exitL, exitR)
+    return
+
+  # add exits
+  if exitT:
+    let x = random up
+    t[0][x] = addRoute(t[0][x], rU)
+  if exitD:
+    let x = random down
+    t[MapTriadHeight-1][x] = addRoute(t[MapTriadHeight-1][x], rD)
+  if exitL:
+    let y = random left
+    t[y][0] = addRoute(t[y][0], rL)
+  if exitR:
+    let y = random right
+    t[y][MapTriadWidth-1] = addRoute(t[y][MapTriadWidth-1], rR)
+
+  # fill map
+  map.clear()
   for y in 0..<MapTriadHeight:
     for x in 0..<MapTriadWidth:
       map.set((x, y), t[y][x])
