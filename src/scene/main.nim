@@ -20,6 +20,7 @@ const
   MapCols = 2
   MapLayer = -100
   PlayerLayer = 100
+  InterfaceLayer = 1000
   MapSwitchCooldown = 1.0
 
 
@@ -29,6 +30,7 @@ type
     mapIdx: tuple[x, y: int]
     player: Player
     mapSwitchCooldown: float
+    pause: Entity
 
 
 template currentMap(scene: MainScene): Map =
@@ -56,10 +58,18 @@ proc init*(scene: MainScene) =
   for i in 0..3:
     let e = newEnemy(1, random scene.currentMap.spawnPoints, scene.currentMap)
     scene.add e
+  # pause
+  scene.pause = newEntity()
+  scene.pause.graphic = gfxData["pause"]
+  scene.pause.centrify()
+  scene.pause.pos = (GameWidth / 2, GameHeight / 2)
+  scene.pause.layer = InterfaceLayer
+  scene.pause.visible = false
 
   # add to scene
   scene.add scene.player
   scene.add scene.currentMap
+  scene.add scene.pause
 
 
 proc free*(scene: MainScene) =
@@ -75,6 +85,9 @@ method event*(scene: MainScene, event: Event) =
   scene.eventScene event
   if event.kind == KeyDown:
     case event.key.keysym.sym:
+    of K_Escape, K_P:
+      gamePaused = not gamePaused
+      scene.pause.visible = gamePaused
     of K_F11:
       showInfo = not showInfo
     else:

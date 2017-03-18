@@ -207,9 +207,16 @@ proc generate*(t: var TriadGrid,
   else: # right border
     choice = choice - TriadsR
 
+  # leave space for the interface
+  if (y == 0) and (x == 6):
+    choice = choice - TriadsL
+  elif (y == 1) and (x in 0..5):
+    choice = choice - TriadsU
+
   if choice == {}:
     # should never happen
     choice = {UND}
+
   t[y][x] = random choice
 
   # recursive
