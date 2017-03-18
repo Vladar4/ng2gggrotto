@@ -42,6 +42,13 @@ var
   moveDown* = [ScancodeDown, ScancodeS]
   moveLeft* = [ScancodeLeft, ScancodeA]
   moveRight* = [ScancodeRight, ScancodeR]
+  # player
+  StartPlayerLives* = 3
+  playerLives* = 3
+  playerScore* = 0
+  playerTargetGoal* = 0
+  playerGoal* = 0
+
 
 proc loadData*() =
   # Font

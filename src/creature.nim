@@ -41,7 +41,7 @@ proc init*(c: Creature, graphic: TextureGraphic, mapPos: MapPos, map: Map) =
   discard c.addAnimation("down",  toSeq(4..7),    Framerate)
   discard c.addAnimation("left",  toSeq(8..11),   Framerate)
   discard c.addAnimation("right", toSeq(12..15),  Framerate)
-  c.collider = c.newBoxCollider(SpriteDim / 2 - SpriteOffset, SpriteDim)
+  c.collider = c.newBoxCollider(SpriteDim / 2 - SpriteOffset, SpriteDim * 0.9)
   c.center = SpriteOffset
   c.speed = DefaultSpeed
   c.map = map

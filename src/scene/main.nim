@@ -6,6 +6,7 @@ import
     entity,
     scene,
     settings,
+    textgraphic,
     types,
     utils,
   ],
@@ -35,6 +36,7 @@ type
     mapIdx: tuple[x, y: int]
     player: Player
     mapSwitchCooldown: float
+    livesText, scoreText, goalText: Entity
     pause: Entity
 
 
@@ -52,21 +54,20 @@ proc init*(scene: MainScene) =
   # maps
   for y in 0..<MapRows:
     for x in 0..<MapCols:
+      var occupied: seq[MapPos] = @[]
       scene.mapGrid[y][x] = newMap()
       scene.mapGrid[y][x].layer = MapLayer
       # items
-      let
-        itemList = [ikSmall, ikBig]
-        occupied: seq[MapPos] = @[]
+      let itemList = [ikSmall, ikBig]
       scene.itemGrid[y][x] = @[]
       for i in 1..ItemsAmount:
-        scene.itemGrid[y][x].add((
-          itemList[randomWeighted([75, 25])],
-          random(scene.mapGrid[y][x].spawnPoints, occupied)))
+        let newPos = random(scene.mapGrid[y][x].spawnPoints, occupied)
+        scene.itemGrid[y][x].add((itemList[randomWeighted([75, 25])], newPos))
+        occupied.add newPos
       for i in 1..random(2..4):
-        scene.itemGrid[y][x].add((
-          ikSpawn,
-          random(scene.mapGrid[y][x].spawnPoints, occupied)))
+        let newPos = random(scene.mapGrid[y][x].spawnPoints, occupied)
+        scene.itemGrid[y][x].add((ikSpawn, newPos))
+        occupied.add newPos
   scene.mapIdx = (0, 0)
   scene.add scene.currentMap
   # player
@@ -81,6 +82,28 @@ proc init*(scene: MainScene) =
   # items
   for i in scene.itemGrid[scene.mapIdx.y][scene.mapIdx.x]:
     scene.add newItem(i.kind, i.pos)
+  # interface: lives
+  scene.livesText = newEntity()
+  scene.livesText.graphic = newTextGraphic defaultFont
+  TextGraphic(scene.livesText.graphic).lines = ["LIVES: " & $playerLives]
+  scene.livesText.pos = (8.0, 0.0)
+  scene.livesText.layer = InterfaceLayer
+  scene.add scene.livesText
+  # interface: score
+  scene.scoreText = newEntity()
+  scene.scoreText.graphic = newTextGraphic defaultFont
+  TextGraphic(scene.scoreText.graphic).lines = ["SCORE: " & $playerScore]
+  scene.scoreText.pos = (8.0, 32.0)
+  scene.scoreText.layer = InterfaceLayer
+  scene.add scene.scoreText
+  # interface: goal
+  scene.goalText = newEntity()
+  scene.goalText.graphic = newTextGraphic defaultFont
+  TextGraphic(scene.goalText.graphic).lines = [
+    "EGGS: " & $playerGoal & "/" & $playerTargetGoal]
+  scene.goalText.pos = (160.0, 0.0)
+  scene.goalText.layer = InterfaceLayer
+  scene.add scene.goalText
   # pause
   scene.pause = newEntity()
   scene.pause.graphic = gfxData["pause"]
@@ -116,9 +139,19 @@ method event*(scene: MainScene, event: Event) =
 
 
 proc changeMap(scene: MainScene, idx: tuple[x, y: int]) =
-  discard scene.del scene.currentMap
+  let
+    x = scene.mapIdx.x
+    y = scene.mapIdx.y
   scene.del "enemy"
+  # clean up items
+  scene.itemGrid[y][x].setLen 0
+  for i in scene.findAll "item":
+    let item = Item(i)
+    if not item.dead:
+      scene.itemGrid[y][x].add((
+        item.kind, item.mapPos))
   scene.del "item"
+  discard scene.del scene.currentMap
   scene.mapIdx = idx
   scene.currentMap = idx
   scene.player.map = scene.currentMap
@@ -179,4 +212,10 @@ method update*(scene: MainScene, elapsed: float) =
       scene.goRight()
   else:
     scene.mapSwitchCooldown -= elapsed
+
+  # interface
+  TextGraphic(scene.livesText.graphic).lines = ["LIVES: " & $playerLives]
+  TextGraphic(scene.scoreText.graphic).lines = ["SCORE: " & $playerScore]
+  TextGraphic(scene.goalText.graphic).lines = [
+    "EGGS: " & $playerGoal & "/" & $playerTargetGoal]
 
