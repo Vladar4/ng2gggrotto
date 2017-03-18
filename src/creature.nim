@@ -1,5 +1,6 @@
 import
   nimgame2 / [
+    collider,
     entity,
     input,
     nimgame,
@@ -15,6 +16,7 @@ const
   Framerate* = 1/12
   DefaultSpeed* = 0.5
   SpriteSize*: Dim = (20, 20)
+  CreatureOffset*: Dim = (1, 1)
 
 
 type
@@ -51,7 +53,8 @@ proc init*(c: Creature, graphic: TextureGraphic, mapPos: MapPos, map: Map) =
   discard c.addAnimation("down",  toSeq(4..7),    Framerate)
   discard c.addAnimation("left",  toSeq(8..11),   Framerate)
   discard c.addAnimation("right", toSeq(12..15),  Framerate)
-  c.center = (1, 1)
+  c.collider = c.newBoxCollider(SpriteDim / 2 - CreatureOffset , SpriteDim)
+  c.center = CreatureOffset
   c.speed = DefaultSpeed
   c.map = map
   c.placeTo(mapPos)

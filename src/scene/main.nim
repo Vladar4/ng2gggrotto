@@ -88,6 +88,8 @@ method event*(scene: MainScene, event: Event) =
     of K_Escape, K_P:
       gamePaused = not gamePaused
       scene.pause.visible = gamePaused
+    of K_F10:
+      colliderOutline = not colliderOutline
     of K_F11:
       showInfo = not showInfo
     else:
