@@ -19,6 +19,7 @@ const
   MapRows = 2
   MapCols = 2
   MapLayer = -100
+  PlayerLayer = 100
   MapSwitchCooldown = 1.0
 
 
@@ -50,6 +51,7 @@ proc init*(scene: MainScene) =
   # player
   scene.player = newPlayer(
     (MapTileWidth div 2 + 1, MapTileHeight div 2 + 1), scene.currentMap)
+  scene.player.layer = PlayerLayer
   # enemies
   for i in 0..3:
     let e = newEnemy(1, random scene.currentMap.spawnPoints, scene.currentMap)
@@ -81,9 +83,13 @@ method event*(scene: MainScene, event: Event) =
 
 proc changeMap(scene: MainScene, idx: tuple[x, y: int]) =
   discard scene.del scene.currentMap
+  scene.del "enemy"
   scene.mapIdx = idx
   scene.currentMap = idx
   scene.player.map = scene.currentMap
+  for i in 0..3:
+    let e = newEnemy(1, random scene.currentMap.spawnPoints, scene.currentMap)
+    scene.add e
   scene.add scene.currentMap
   scene.mapSwitchCooldown = MapSwitchCooldown
 

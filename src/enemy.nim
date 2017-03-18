@@ -16,6 +16,7 @@ type
 
 proc init*(e: Enemy, id: int, mapPos: MapPos, map: Map) =
   Creature(e).init gfxData["enemy" & $id], mapPos, map
+  e.tags.add "enemy"
   e.id = id
 
 

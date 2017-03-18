@@ -44,7 +44,7 @@ proc placeTo*(c: Creature, mapPos: MapPos) =
 
 proc init*(c: Creature, graphic: TextureGraphic, mapPos: MapPos, map: Map) =
   c.initEntity()
-  c.tags.add("creature")
+  c.tags.add "creature"
   c.graphic = graphic
   c.initSprite(SpriteSize)
   discard c.addAnimation("up",    toSeq(0..3),    Framerate)

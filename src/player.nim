@@ -14,6 +14,7 @@ type
 
 proc init*(p: Player, mapPos: MapPos, map: Map) =
   Creature(p).init gfxData["player"], mapPos, map
+  p.tags.add "player"
 
 
 proc newPlayer*(mapPos: MapPos, map: Map): Player =
