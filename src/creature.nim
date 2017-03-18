@@ -18,12 +18,10 @@ const
 
 
 type
-  Control* {.pure.} = enum none, player, ai
   Direction* = enum dStay, dUp, dDown, dLeft, dRight
   MapPos* = tuple[x, y: int]
 
   Creature* = ref object of Entity
-    control*: Control
     speed*: float
     prevDirection*: Direction
     tween: Tween[Creature,Coord]
@@ -64,7 +62,7 @@ proc newCreature*(graphic: TextureGraphic, mapPos: MapPos, map: Map): Creature =
   init result, graphic, mapPos, map
 
 
-proc dirAvailable(c: Creature, dir: Direction): bool =
+proc dirAvailable*(c: Creature, dir: Direction): bool =
   let
     x = c.mapPos.x
     y = c.mapPos.y
@@ -125,17 +123,12 @@ proc move*(c: Creature, dir: Direction) =
     c.prevDirection = dir
 
 
-method update*(c: Creature, elapsed: float) =
+proc updateCreature*(c: Creature, elapsed: float) =
   c.updateEntity elapsed
   if c.tween != nil:
     c.tween.update elapsed
-  case c.control:
-  of Control.player:
-    if moveUp.down and c.dirAvailable(dUp): c.move(dUp)
-    elif moveDown.down and c.dirAvailable(dDown): c.move(dDown)
-    elif moveLeft.down and c.dirAvailable(dLeft): c.move(dLeft)
-    elif moveRight.down and c.dirAvailable(dRight): c.move(dRight)
-    elif c.dirAvailable(c.prevDirection): c.move(c.prevDirection)
-  else:
-    discard
+
+
+method update*(c: Creature, elapsed: float) =
+  c.updateCreature elapsed
 

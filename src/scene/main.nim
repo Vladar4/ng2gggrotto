@@ -7,8 +7,9 @@ import
     settings,
     types,
   ],
-  ../data,
   ../creature,
+  ../data,
+  ../player,
   ../map
 
 
@@ -16,14 +17,14 @@ const
   MapRows = 2
   MapCols = 2
   MapLayer = -100
-  MapSwitchCooldown = 2.0
+  MapSwitchCooldown = 1.0
 
 
 type
   MainScene = ref object of Scene
     mapGrid: array[MapRows, array[MapCols, Map]]
     mapIdx: tuple[x, y: int]
-    player: Creature
+    player: Player
     mapSwitchCooldown: float
 
 
@@ -45,10 +46,8 @@ proc init*(scene: MainScene) =
       scene.mapGrid[y][x].layer = MapLayer
   scene.mapIdx = (0, 0)
   # player
-  scene.player = newCreature(gfxData["player"],
-                             (MapTileWidth div 2 + 1, MapTileHeight div 2 + 1),
-                             scene.currentMap)
-  scene.player.control = Control.player
+  scene.player = newPlayer(
+    (MapTileWidth div 2 + 1, MapTileHeight div 2 + 1), scene.currentMap)
 
   # add to scene
   scene.add scene.player
