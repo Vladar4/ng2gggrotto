@@ -1,4 +1,5 @@
 import
+  random,
   nimgame2 / [
     assets,
     input,
@@ -27,8 +28,12 @@ method update*(e: Enemy, elapsed: float) =
   e.updateCreature elapsed
   if e.prevDirection != dStay and e.dirAvailable(e.prevDirection):
     e.move(e.prevDirection)
-  elif e.dirAvailable(dUp): e.move(dUp)
-  elif e.dirAvailable(dDown): e.move(dDown)
-  elif e.dirAvailable(dLeft): e.move(dLeft)
-  elif e.dirAvailable(dRight): e.move(dRight)
+  else:
+    var choice = @[dUp, dDown, dLeft, dRight]
+    shuffle choice
+
+    for dir in choice:
+      if e.dirAvailable dir:
+        e.move dir
+        break
 
