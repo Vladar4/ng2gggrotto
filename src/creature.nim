@@ -2,7 +2,6 @@ import
   nimgame2 / [
     collider,
     entity,
-    input,
     nimgame,
     texturegraphic,
     tween,
@@ -15,13 +14,10 @@ import
 const
   Framerate* = 1/12
   DefaultSpeed* = 0.5
-  SpriteSize*: Dim = (20, 20)
-  CreatureOffset*: Dim = (1, 1)
 
 
 type
   Direction* = enum dStay, dUp, dDown, dLeft, dRight
-  MapPos* = tuple[x, y: int]
 
   Creature* = ref object of Entity
     speed*: float
@@ -29,14 +25,6 @@ type
     tween: Tween[Creature,Coord]
     map*: Map
     mapPos*: MapPos
-
-
-proc toCoord(pos: MapPos): Coord {.inline.} =
-  (pos.x * SpriteDim.w + 1, pos.y * SpriteDim.h + 1)
-
-
-proc toMapPos(pos: Coord, size = SpriteSize): MapPos {.inline.} =
-  (int(pos.x / size.w.float), int(pos.y / size.h.float))
 
 
 proc placeTo*(c: Creature, mapPos: MapPos) =
@@ -48,13 +36,13 @@ proc init*(c: Creature, graphic: TextureGraphic, mapPos: MapPos, map: Map) =
   c.initEntity()
   c.tags.add "creature"
   c.graphic = graphic
-  c.initSprite(SpriteSize)
+  c.initSprite(SpriteDim)
   discard c.addAnimation("up",    toSeq(0..3),    Framerate)
   discard c.addAnimation("down",  toSeq(4..7),    Framerate)
   discard c.addAnimation("left",  toSeq(8..11),   Framerate)
   discard c.addAnimation("right", toSeq(12..15),  Framerate)
-  c.collider = c.newBoxCollider(SpriteDim / 2 - CreatureOffset , SpriteDim)
-  c.center = CreatureOffset
+  c.collider = c.newBoxCollider(SpriteDim / 2 - SpriteOffset, SpriteDim)
+  c.center = SpriteOffset
   c.speed = DefaultSpeed
   c.map = map
   c.placeTo(mapPos)

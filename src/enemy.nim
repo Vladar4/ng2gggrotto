@@ -2,7 +2,6 @@ import
   random,
   nimgame2 / [
     assets,
-    input,
   ],
   creature,
   data,

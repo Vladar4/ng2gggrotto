@@ -17,8 +17,20 @@ const
   GameWidth*    = 960
   GameHeight*   = 600
   DefaultFont*  = "data/fnt/FSEX300.ttf"
-  SpriteDim*: Dim     = (20, 20)
-  SpriteOffset*: Dim  = (0, 0)
+  SpriteDim*: Dim       = (20, 20)
+  SpriteOffset*: Dim    = (1, 1)
+
+
+type
+  MapPos* = tuple[x, y: int]
+
+
+proc toCoord*(pos: MapPos): Coord {.inline.} =
+  (pos.x * SpriteDim.w + SpriteOffset.w, pos.y * SpriteDim.h + SpriteOffset.h)
+
+
+proc toMapPos*(pos: Coord, size = SpriteDim): MapPos {.inline.} =
+  (int(pos.x / size.w.float), int(pos.y / size.h.float))
 
 
 var

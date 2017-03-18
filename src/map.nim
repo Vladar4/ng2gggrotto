@@ -15,8 +15,8 @@ import
 
 type
   Map* = ref object of TileMap
-    exitU*, exitD*, exitL*, exitR*: tuple[x, y: int]
-    spawnPoints*: seq[tuple[x, y: int]]
+    exitU*, exitD*, exitL*, exitR*: MapPos
+    spawnPoints*: seq[MapPos]
 
   Tile = enum
     flr # floor
@@ -370,7 +370,7 @@ proc generate*(map: Map, minimalSize = MinimalMapSize) =
 proc init*(map: Map) =
   init TileMap(map)
   map.graphic = gfxData["tiles"]
-  map.initSprite SpriteDim, SpriteOffset
+  map.initSprite SpriteDim
   map.generate()
 
 

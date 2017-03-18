@@ -7,10 +7,12 @@ import
     scene,
     settings,
     types,
+    utils,
   ],
   ../creature,
   ../data,
   ../enemy,
+  ../item,
   ../player,
   ../map
 
@@ -19,7 +21,9 @@ const
   MapRows = 2
   MapCols = 2
   MapLayer = -100
-  PlayerLayer = 100
+  ItemLayer = 100
+  PlayerLayer = 200
+  EnemyLayer = 300
   InterfaceLayer = 1000
   MapSwitchCooldown = 1.0
 
@@ -27,6 +31,7 @@ const
 type
   MainScene = ref object of Scene
     mapGrid: array[MapRows, array[MapCols, Map]]
+    itemGrid: array[MapRows, array[MapCols, seq[tuple[kind: ItemKind, pos: MapPos]]]]
     mapIdx: tuple[x, y: int]
     player: Player
     mapSwitchCooldown: float
@@ -49,15 +54,33 @@ proc init*(scene: MainScene) =
     for x in 0..<MapCols:
       scene.mapGrid[y][x] = newMap()
       scene.mapGrid[y][x].layer = MapLayer
+      # items
+      let
+        itemList = [ikSmall, ikBig]
+        occupied: seq[MapPos] = @[]
+      scene.itemGrid[y][x] = @[]
+      for i in 1..ItemsAmount:
+        scene.itemGrid[y][x].add((
+          itemList[randomWeighted([75, 25])],
+          random(scene.mapGrid[y][x].spawnPoints, occupied)))
+      for i in 1..random(2..4):
+        scene.itemGrid[y][x].add((
+          ikSpawn,
+          random(scene.mapGrid[y][x].spawnPoints, occupied)))
   scene.mapIdx = (0, 0)
+  scene.add scene.currentMap
   # player
   scene.player = newPlayer(
     (MapTileWidth div 2 + 1, MapTileHeight div 2 + 1), scene.currentMap)
   scene.player.layer = PlayerLayer
+  scene.add scene.player
   # enemies
   for i in 0..3:
     let e = newEnemy(1, random scene.currentMap.spawnPoints, scene.currentMap)
     scene.add e
+  # items
+  for i in scene.itemGrid[scene.mapIdx.y][scene.mapIdx.x]:
+    scene.add newItem(i.kind, i.pos)
   # pause
   scene.pause = newEntity()
   scene.pause.graphic = gfxData["pause"]
@@ -65,10 +88,6 @@ proc init*(scene: MainScene) =
   scene.pause.pos = (GameWidth / 2, GameHeight / 2)
   scene.pause.layer = InterfaceLayer
   scene.pause.visible = false
-
-  # add to scene
-  scene.add scene.player
-  scene.add scene.currentMap
   scene.add scene.pause
 
 
@@ -99,6 +118,7 @@ method event*(scene: MainScene, event: Event) =
 proc changeMap(scene: MainScene, idx: tuple[x, y: int]) =
   discard scene.del scene.currentMap
   scene.del "enemy"
+  scene.del "item"
   scene.mapIdx = idx
   scene.currentMap = idx
   scene.player.map = scene.currentMap
@@ -107,6 +127,9 @@ proc changeMap(scene: MainScene, idx: tuple[x, y: int]) =
     scene.add e
   scene.add scene.currentMap
   scene.mapSwitchCooldown = MapSwitchCooldown
+  # items
+  for i in scene.itemGrid[scene.mapIdx.y][scene.mapIdx.x]:
+    scene.add newItem(i.kind, i.pos)
 
 
 template goUp(scene: MainScene) =
