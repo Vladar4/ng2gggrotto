@@ -1,4 +1,5 @@
 import
+  random,
   nimgame2 / [
     assets,
     nimgame,
@@ -9,6 +10,7 @@ import
   ],
   ../creature,
   ../data,
+  ../enemy,
   ../player,
   ../map
 
@@ -48,6 +50,10 @@ proc init*(scene: MainScene) =
   # player
   scene.player = newPlayer(
     (MapTileWidth div 2 + 1, MapTileHeight div 2 + 1), scene.currentMap)
+  # enemies
+  for i in 0..3:
+    let e = newEnemy(1, random scene.currentMap.spawnPoints, scene.currentMap)
+    scene.add e
 
   # add to scene
   scene.add scene.player

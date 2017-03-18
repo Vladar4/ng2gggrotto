@@ -16,6 +16,7 @@ import
 type
   Map* = ref object of TileMap
     exitU*, exitD*, exitL*, exitR*: tuple[x, y: int]
+    spawnPoints*: seq[tuple[x, y: int]]
 
   Tile = enum
     flr # floor
@@ -116,6 +117,11 @@ const
 
 type
   TriadGrid = array[MapTriadHeight, array[MapTriadWidth, Triad]]
+
+
+template triadToTile(x, y: int): tuple[x, y: int] =
+  ( x * 3 + 1,
+    y * 3 + 1 )
 
 
 proc init(t: var TriadGrid) =
@@ -315,33 +321,43 @@ proc generate*(map: Map, minimalSize = MinimalMapSize) =
     let mid = s.len div 2
     random([s[mid-1], s[mid]])
 
-  template triadToExitTile(x, y: int): tuple[x, y: int] =
-    ( x * 3 + 1,
-      y * 3 + 1 )
-
   # add exits
   block exitU:
     let x = middle up
     t[0][x] = addRoute(t[0][x], rU)
-    map.exitU = triadToExitTile(x, 0)
+    map.exitU = triadToTile(x, 0)
   block exitD:
     let x = middle down
     t[MapTriadHeight-1][x] = addRoute(t[MapTriadHeight-1][x], rD)
-    map.exitD = triadToExitTile(x, MapTriadHeight-1)
+    map.exitD = triadToTile(x, MapTriadHeight-1)
   block exitL:
     let y = middle left
     t[y][0] = addRoute(t[y][0], rL)
-    map.exitL = triadToExitTile(0, y)
+    map.exitL = triadToTile(0, y)
   block exitR:
     let y = middle right
     t[y][MapTriadWidth-1] = addRoute(t[y][MapTriadWidth-1], rR)
-    map.exitR = triadToExitTile(MapTriadWidth-1, y)
+    map.exitR = triadToTile(MapTriadWidth-1, y)
 
   # fill map
   map.clear()
   for y in 0..<MapTriadHeight:
     for x in 0..<MapTriadWidth:
       map.set((x, y), t[y][x])
+
+  # fill spawn points
+  map.spawnPoints = @[]
+  let
+    clearCenterUp = MapTileHeight div 2 - 2
+    clearCenterDown = MapTileHeight div 2 + 4
+    clearCenterLeft = MapTileWidth div 2 - 2
+    clearCenterRight = MapTileWidth div 2 + 4
+  for y in 3..<(MapTileHeight-3):
+    for x in 3..<(MapTileWidth-3):
+      if ((y < clearCenterUp) or (y > clearCenterDown)) or
+         ((x < clearCenterLeft) or (x > clearCenterRight)):
+        if map.map[y][x] == flr:
+          map.spawnPoints.add((x, y))
 
 
 proc init*(map: Map) =
