@@ -15,6 +15,7 @@ import
 
 type
   Map* = ref object of TileMap
+    exitU*, exitD*, exitL*, exitR*: tuple[x, y: int]
 
   Tile = enum
     flr # floor
@@ -221,9 +222,7 @@ proc generate*(t: var TriadGrid,
       t.generate(x+1, y)
 
 
-proc generate*(map: Map, minimalSize = MinimalMapSize,
-               exitT = true, exitD = true,
-               exitL = true, exitR = true) =
+proc generate*(map: Map, minimalSize = MinimalMapSize) =
   var t: TriadGrid
   init t
   generate t
@@ -237,7 +236,7 @@ proc generate*(map: Map, minimalSize = MinimalMapSize,
       else:
         inc counter
   if counter < minimalSize:
-    map.generate(minimalSize, exitT, exitD, exitL, exitR)
+    map.generate(minimalSize)
     return
 
   # create exits
@@ -305,30 +304,38 @@ proc generate*(map: Map, minimalSize = MinimalMapSize,
       right.add y
 
   # check for exits
-  if (exitT and up.len < 1) or
-     (exitD and down.len < 1) or
-     (exitL and left.len < 1) or
-     (exitR and right.len < 1):
-    map.generate(minimalSize, exitT, exitD, exitL, exitR)
+  if (up.len < 1) or
+     (down.len < 1) or
+     (left.len < 1) or
+     (right.len < 1):
+    map.generate minimalSize
     return
 
   proc middle(s: seq[int]): int =
     let mid = s.len div 2
     random([s[mid-1], s[mid]])
 
+  template triadToExitTile(x, y: int): tuple[x, y: int] =
+    ( x * 3 + 1,
+      y * 3 + 1 )
+
   # add exits
-  if exitT:
+  block exitU:
     let x = middle up
     t[0][x] = addRoute(t[0][x], rU)
-  if exitD:
+    map.exitU = triadToExitTile(x, 0)
+  block exitD:
     let x = middle down
     t[MapTriadHeight-1][x] = addRoute(t[MapTriadHeight-1][x], rD)
-  if exitL:
+    map.exitD = triadToExitTile(x, MapTriadHeight-1)
+  block exitL:
     let y = middle left
     t[y][0] = addRoute(t[y][0], rL)
-  if exitR:
+    map.exitL = triadToExitTile(0, y)
+  block exitR:
     let y = middle right
     t[y][MapTriadWidth-1] = addRoute(t[y][MapTriadWidth-1], rR)
+    map.exitR = triadToExitTile(MapTriadWidth-1, y)
 
   # fill map
   map.clear()
@@ -351,13 +358,4 @@ proc free*(map: Map) =
 proc newMap*(): Map =
   new result, free
   init result
-
-
-method event*(map: Map, event: Event) =
-  if event.kind == KeyDown:
-    case event.key.keysym.sym:
-    of K_R:
-      map.generate()
-    else:
-      discard
 

@@ -39,6 +39,11 @@ proc toMapPos(pos: Coord, size = SpriteSize): MapPos {.inline.} =
   (int(pos.x / size.w.float), int(pos.y / size.h.float))
 
 
+proc placeTo*(c: Creature, mapPos: MapPos) =
+  c.mapPos = mapPos
+  c.pos = mapPos.toCoord
+
+
 proc init*(c: Creature, graphic: TextureGraphic, mapPos: MapPos, map: Map) =
   c.initEntity()
   c.tags.add("creature")
@@ -51,8 +56,7 @@ proc init*(c: Creature, graphic: TextureGraphic, mapPos: MapPos, map: Map) =
   c.center = (1, 1)
   c.speed = DefaultSpeed
   c.map = map
-  c.mapPos = mapPos
-  c.pos = mapPos.toCoord
+  c.placeTo(mapPos)
 
 
 proc newCreature*(graphic: TextureGraphic, mapPos: MapPos, map: Map): Creature =
