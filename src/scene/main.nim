@@ -178,7 +178,7 @@ proc changeMap(scene: MainScene, idx: tuple[x, y: int]) =
   # items
   for i in scene.itemGrid[scene.mapIdx.y][scene.mapIdx.x]:
     scene.add newItem(i.kind, i.pos)
-  GC_fullCollect()
+  #GC_fullCollect()
 
 
 template goUp(scene: MainScene) =
