@@ -17,8 +17,8 @@ const
   GameWidth*    = 960
   GameHeight*   = 600
   DefaultFont*  = "data/fnt/FSEX300.ttf"
-  SpriteDim*: Dim       = (20, 20)
-  SpriteOffset*: Dim    = (1, 1)
+  SpriteDim*: Dim     = (20, 20)
+  SpriteOffset*: Dim  = (1, 1)
 
 
 type
@@ -42,12 +42,17 @@ var
   moveDown* = [ScancodeDown, ScancodeS]
   moveLeft* = [ScancodeLeft, ScancodeA]
   moveRight* = [ScancodeRight, ScancodeR]
+  # amount
+  ItemsAmount* = 32
+  GoalsAmount* = 4
+  EnemiesAmount* = 8
   # player
   StartPlayerLives* = 3
   playerLives* = 3
   playerScore* = 0
   playerTargetGoal* = 0
   playerGoal* = 0
+  scoreMultiplier* = 1
 
 
 proc loadData*() =

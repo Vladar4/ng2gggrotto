@@ -11,7 +11,6 @@ import
 
 
 const
-  ItemsAmount*    = 25
   ItemAssetSmall  = "fish"
   ItemAssetBig    = "jam"
   ItemAssetSpawn  = "egg"
@@ -25,11 +24,13 @@ type
   Item* = ref object of Entity
     kind*: ItemKind
     mapPos*: MapPos
+    spawn*: bool
 
 
 proc init*(item: Item, kind: ItemKind, mapPos: MapPos) =
   item.initEntity()
   item.tags.add "item"
+  item.spawn = false
 
   item.kind = kind
   case kind:
@@ -38,6 +39,7 @@ proc init*(item: Item, kind: ItemKind, mapPos: MapPos) =
   of ikBig:
     item.graphic = gfxData[ItemAssetBig]
   of ikSpawn:
+    item.tags.add "spawn"
     item.graphic = gfxData[ItemAssetSpawn]
 
   item.collider = item.newBoxCollider(
@@ -56,11 +58,14 @@ proc newItem*(kind: ItemKind, mapPos: MapPos): Item =
 method onCollide*(item: Item, target: Entity) =
   if "player" in target.tags:
     item.dead = true
+    item.spawn = true
+    echo scoreMultiplier
     case item.kind:
     of ikSmall:
-      playerScore += BonusSmall
+      playerScore += BonusSmall * scoreMultiplier
     of ikBig:
-      playerScore += BonusBig
+      playerScore += BonusBig * scoreMultiplier
     of ikSpawn:
-      playerScore += BonusSpawn
+      playerScore += BonusSpawn * scoreMultiplier
+      inc playerGoal
 

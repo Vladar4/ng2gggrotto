@@ -22,7 +22,7 @@ type
   Creature* = ref object of Entity
     speed*: float
     prevDirection*: Direction
-    tween: Tween[Creature,Coord]
+    tween*: Tween[Creature,Coord]
     map*: Map
     mapPos*: MapPos
 
@@ -41,6 +41,7 @@ proc init*(c: Creature, graphic: TextureGraphic, mapPos: MapPos, map: Map) =
   discard c.addAnimation("down",  toSeq(4..7),    Framerate)
   discard c.addAnimation("left",  toSeq(8..11),   Framerate)
   discard c.addAnimation("right", toSeq(12..15),  Framerate)
+  discard c.addAnimation("death", [0, 4, 8, 12],  Framerate)
   c.collider = c.newBoxCollider(SpriteDim / 2 - SpriteOffset, SpriteDim * 0.9)
   c.center = SpriteOffset
   c.speed = DefaultSpeed
