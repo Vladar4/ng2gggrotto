@@ -11,6 +11,7 @@ import
     types,
     utils,
   ],
+  ../bonustext,
   ../creature,
   ../data,
   ../enemy,
@@ -51,7 +52,7 @@ proc switchMap(scene: MainScene, idx: tuple[x, y: int]) =
   for t in scene.train:
     t.map = scene.currentMap
   scene.add scene.currentMap
-  echo scene.mapidx
+  scene.mapSwitchCooldown = MapSwitchCooldown
 
 
 template player(scene: MainScene): Player =
@@ -174,7 +175,6 @@ proc changeMap(scene: MainScene, idx: tuple[x, y: int]) =
     let e = newEnemy(1, random scene.currentMap.spawnPoints, scene.currentMap)
     e.layer = EnemyLayer
     scene.add e
-  scene.mapSwitchCooldown = MapSwitchCooldown
   # items
   for i in scene.itemGrid[scene.mapIdx.y][scene.mapIdx.x]:
     scene.add newItem(i.kind, i.pos)
@@ -185,8 +185,7 @@ template goUp(scene: MainScene) =
   let idx = scene.mapIdx
   scene.changeMap if idx.y > 0: (idx.x, idx.y - 1)
                   else: (idx.x, MapRows - 1)
-  scene.train[0].placeTo(scene.currentMap.exitD)
-  for i in 1..scene.train.high:
+  for i in 0..scene.train.high:
     if scene.train[i].tween != nil:
       scene.train[i].tween.stop()
     scene.train[i].placeTo(scene.currentMap.exitD)
@@ -196,8 +195,7 @@ template goDown(scene: MainScene) =
   let idx = scene.mapIdx
   scene.changeMap if idx.y < (MapRows - 1): (idx.x, idx.y + 1)
                   else: (idx.x, 0)
-  scene.train[0].placeTo(scene.currentMap.exitU)
-  for i in 1..scene.train.high:
+  for i in 0..scene.train.high:
     if scene.train[i].tween != nil:
       scene.train[i].tween.stop()
     scene.train[i].placeTo(scene.currentMap.exitU)
@@ -207,8 +205,7 @@ template goLeft(scene: MainScene) =
   let idx = scene.mapIdx
   scene.changeMap if idx.x > 0: (idx.x - 1, idx.y)
                   else: (MapCols - 1, idx.y)
-  scene.train[0].placeTo(scene.currentMap.exitR)
-  for i in 1..scene.train.high:
+  for i in 0..scene.train.high:
     if scene.train[i].tween != nil:
       scene.train[i].tween.stop()
     scene.train[i].placeTo(scene.currentMap.exitR)
@@ -218,14 +215,17 @@ template goRight(scene: MainScene) =
   let idx = scene.mapIdx
   scene.changeMap if idx.x < (MapCols - 1): (idx.x + 1, idx.y)
                   else: (0, idx.y)
-  scene.train[0].placeTo(scene.currentMap.exitL)
-  for i in 1..scene.train.high:
+  for i in 0..scene.train.high:
     if scene.train[i].tween != nil:
       scene.train[i].tween.stop()
     scene.train[i].placeTo(scene.currentMap.exitL)
 
 
 method update*(scene: MainScene, elapsed: float) =
+  # bonuses
+  for i in scene.findAll "item":
+    if i.dead:
+      scene.add newBonusText(i.pos, $Item(i).price())
   # kill
   var
     killNext = false
@@ -255,23 +255,27 @@ method update*(scene: MainScene, elapsed: float) =
     t.changeFramerate(framerate)
 
   scene.updateScene elapsed
+
   if scene.mapSwitchCooldown <= 0.0:
     if scene.player.pos.y <= 1.0:
       scene.goUp()
     elif scene.player.pos.y >= (GameHeight -
-                                scene.player.sprite.dim.h.float + 1.0):
+                                scene.player.sprite.dim.h.float - 1.0):
       scene.goDown()
     elif scene.player.pos.x <= 1.0:
       scene.goLeft()
     elif scene.player.pos.x >= (GameWidth -
-                                scene.player.sprite.dim.w.float + 1.0):
+                                scene.player.sprite.dim.w.float - 1.0):
       scene.goRight()
   else:
     scene.mapSwitchCooldown -= elapsed
 
   # interface
-  TextGraphic(scene.livesText.graphic).lines = ["LIVES: " & $playerLives]
-  TextGraphic(scene.scoreText.graphic).lines = ["SCORE: " & $playerScore]
-  TextGraphic(scene.goalText.graphic).lines = [
-    "EGGS: " & $playerGoal & "/" & $playerTargetGoal]
+  try:
+    TextGraphic(scene.livesText.graphic).lines = ["LIVES: " & $playerLives]
+    TextGraphic(scene.scoreText.graphic).lines = ["SCORE: " & $playerScore]
+    TextGraphic(scene.goalText.graphic).lines = [
+      "EGGS: " & $playerGoal & "/" & $playerTargetGoal]
+  except:
+    discard
 

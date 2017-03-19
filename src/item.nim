@@ -27,6 +27,14 @@ type
     spawn*: bool
 
 
+proc price*(item: Item): int =
+  result = case item.kind:
+    of ikSmall: BonusSmall
+    of ikBig:   BonusBig
+    of ikSpawn: BonusSpawn
+  result *= scoreMultiplier
+
+
 proc init*(item: Item, kind: ItemKind, mapPos: MapPos) =
   item.initEntity()
   item.tags.add "item"
@@ -59,12 +67,7 @@ method onCollide*(item: Item, target: Entity) =
   if "player" in target.tags:
     item.dead = true
     item.spawn = true
-    case item.kind:
-    of ikSmall:
-      playerScore += BonusSmall * scoreMultiplier
-    of ikBig:
-      playerScore += BonusBig * scoreMultiplier
-    of ikSpawn:
-      playerScore += BonusSpawn * scoreMultiplier
+    playerScore += item.price()
+    if item.kind == ikSpawn:
       inc playerGoal
 

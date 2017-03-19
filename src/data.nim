@@ -35,7 +35,7 @@ proc toMapPos*(pos: Coord, size = SpriteDim): MapPos {.inline.} =
 
 var
   introScene*, titleScene*, mainScene*: Scene
-  defaultFont*: TrueTypeFont
+  defaultFont*, bonusFont*: TrueTypeFont
   gfxData*: Assets[TextureGraphic]
   #TODO sfxData*: Assets[Sound]
   moveUp* = [ScancodeUp, ScancodeW]
@@ -62,6 +62,9 @@ proc loadData*() =
   # Font
   defaultFont = newTrueTypeFont()
   if not defaultFont.load(DefaultFont, 32):
+    write stdout, "ERROR: Can't load font: ", DefaultFont
+  bonusFont = newTrueTypeFont()
+  if not bonusFont.load(DefaultFont, 16):
     write stdout, "ERROR: Can't load font: ", DefaultFont
   # GFX
   gfxData = newAssets[TextureGraphic]("data/gfx",
