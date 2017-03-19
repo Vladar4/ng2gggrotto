@@ -226,8 +226,10 @@ template goRight(scene: MainScene) =
 
 method update*(scene: MainScene, elapsed: float) =
   # kill
-  var killNext = false
-  for i in 1..scene.train.high:
+  var
+    killNext = false
+    i = 1
+  while i < scene.train.len:
     let f = Follower(scene.train[i])
     if killNext:
       if not f.killed:
@@ -235,7 +237,9 @@ method update*(scene: MainScene, elapsed: float) =
     elif f.killed:
       killNext = true
       if f.dead:
-        scene.train.del i
+        scene.train.delete i
+        dec i
+    inc i
   # spawn
   for i in scene.findAll "spawn":
     if Item(i).spawn:

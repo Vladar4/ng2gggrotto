@@ -35,7 +35,6 @@ proc kill*(f: Follower) =
     f.tween.stop()
   f.play("death", 2, true)
   dec scoreMultiplier
-  echo scoreMultiplier
 
 
 method update*(f: Follower, elapsed: float) =

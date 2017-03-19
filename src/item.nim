@@ -59,7 +59,6 @@ method onCollide*(item: Item, target: Entity) =
   if "player" in target.tags:
     item.dead = true
     item.spawn = true
-    echo scoreMultiplier
     case item.kind:
     of ikSmall:
       playerScore += BonusSmall * scoreMultiplier
