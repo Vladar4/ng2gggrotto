@@ -1,5 +1,6 @@
 import
   nimgame2 / [
+    assets,
     nimgame,
     entity,
     font,
@@ -20,6 +21,7 @@ type
     victory*: bool
     input*: Entity
     index*: int
+    winscreen, losescreen: Entity
 
 
 proc init*(scene: HiscoreScene) =
@@ -43,14 +45,25 @@ proc init*(scene: HiscoreScene) =
   scene.input.centrify()
   scene.input.pos = game.size / 2
   scene.add scene.input
+  # screens
+  let screenpos = (game.size.w / 2, game.size.h / 2 + 16)
+  scene.winscreen = newEntity()
+  scene.winscreen.graphic = gfxData["winscreen"]
+  scene.winscreen.centrify(ver = VAlign.top)
+  scene.winscreen.pos = screenpos
+  scene.winscreen.visible = false
+  scene.add scene.winscreen
+  scene.losescreen = newEntity()
+  scene.losescreen.graphic = gfxData["losescreen"]
+  scene.losescreen.centrify(ver = VAlign.top)
+  scene.losescreen.pos = screenpos
+  scene.losescreen.visible = false
+  scene.add scene.losescreen
 
 
 method show*(scene: HiscoreScene) =
-  if scene.victory:
-    discard
-  else:
-    discard
-
+  scene.winscreen.visible = scene.victory
+  scene.losescreen.visible = not scene.victory
   TextField(scene.input.graphic).activate()
 
 

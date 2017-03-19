@@ -112,7 +112,7 @@ const
   MapTriadWidth*  = MapTileWidth  div 3
   MapTriadHeight* = MapTileHeight div 3
   MapCenter*: Dim = (MapTriadWidth div 2, MapTriadHeight div 2)
-  MinimalMapSize  = int(MapTriadWidth * MapTriadHeight * 0.75)
+  MinimalMapSize  = int(MapTriadWidth * MapTriadHeight * 0.7)
 
 
 type
@@ -355,10 +355,10 @@ proc generate*(map: Map, minimalSize = MinimalMapSize) =
   # fill spawn points
   map.spawnPoints = @[]
   let
-    clearCenterUp = MapTileHeight div 2 - 2
-    clearCenterDown = MapTileHeight div 2 + 4
-    clearCenterLeft = MapTileWidth div 2 - 2
-    clearCenterRight = MapTileWidth div 2 + 4
+    clearCenterUp = MapTileHeight div 2 - 3
+    clearCenterDown = MapTileHeight div 2 + 5
+    clearCenterLeft = MapTileWidth div 2 - 3
+    clearCenterRight = MapTileWidth div 2 + 5
   for y in 3..<(MapTileHeight-3):
     for x in 3..<(MapTileWidth-3):
       if ((y < clearCenterUp) or (y > clearCenterDown)) or

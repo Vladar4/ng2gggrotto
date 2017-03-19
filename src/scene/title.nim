@@ -1,10 +1,12 @@
 import
   nimgame2 / [
+    assets,
     nimgame,
     entity,
     scene,
     settings,
     textgraphic,
+    texturegraphic,
     types,
   ],
   ../data,
@@ -14,7 +16,7 @@ import
 
 type
   TitleScene = ref object of Scene
-    titleText, scoreText: TextGraphic
+    scoreText: TextGraphic
     scoreboard: Entity
 
 
@@ -23,14 +25,7 @@ proc init*(scene: TitleScene) =
 
   # title
   let title = newEntity()
-  scene.titleText = newTextGraphic defaultFont
-  scene.titleText.lines = [
-    GameTitle,
-    "________________________",
-    "",
-    " press any key to start "]
-  scene.titleText.align = TextAlign.center
-  title.graphic = scene.titleText
+  title.graphic = gfxData["titlescreen"]
   title.centrify(ver = VAlign.top)
   title.pos = (game.size.w / 2, 20.0)
   scene.add title
@@ -45,7 +40,6 @@ proc init*(scene: TitleScene) =
 
 
 proc free*(scene: TitleScene) =
-  free scene.titleText
   free scene.scoreText
   freeData()
 
@@ -58,6 +52,7 @@ proc newTitleScene*(): TitleScene =
 method show*(scene: TitleScene) =
   initHiscores()
   scene.scoreText.lines = [
+    "- - - - HISCORES - - - -",
     hiscores[0].name.toString & " " & $hiscores[0].score,
     hiscores[1].name.toString & " " & $hiscores[1].score,
     hiscores[2].name.toString & " " & $hiscores[2].score,

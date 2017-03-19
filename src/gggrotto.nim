@@ -2,6 +2,7 @@ import
   nimgame2 / [
     nimgame,
     settings,
+    types,
   ],
   data,
   scene / [
@@ -15,7 +16,8 @@ import
 game = newGame()
 if game.init(GameWidth, GameHeight,
              title = GameTitle,
-             icon = GameIcon):
+             icon = GameIcon,
+             bgColor = Color(r: 102, g: 204, b:255, a: 255)):
   # Init
   game.setResizable(true)
   game.minSize = (GameWidth div 2, int GameHeight div 2)
