@@ -8,6 +8,7 @@ import
     intro,
     title,
     main,
+    hiscore,
   ]
 
 
@@ -23,7 +24,7 @@ if game.init(GameWidth, GameHeight,
   # Scenes
   introScene = newIntroScene()
   titleScene = newTitleScene()
-  mainScene  = newMainScene()
+  hiscoreScene = newHiscoreScene()
   # Run
   game.scene = introScene
   run game

@@ -17,8 +17,10 @@ import
   ../enemy,
   ../follower,
   ../item,
+  ../map,
   ../player,
-  ../map
+  ../score,
+  hiscore
 
 
 const
@@ -231,12 +233,13 @@ method update*(scene: MainScene, elapsed: float) =
     while scene.train.len > 1:
       let f = scene.train.pop()
       Follower(f).kill()
-    if scene.player.dead:
+    if scene.player.dead and playerLives >= 0:
       dec playerLives
       scene.del "player"
       scene.changeMap((0, 0))
       scene.train[0] = newPlayer(
         (MapTileWidth div 2 + 1, MapTileHeight div 2 + 1), scene.currentMap)
+      scene.player.layer = PlayerLayer
       scene.add scene.player
   else:
     # kill
@@ -272,26 +275,37 @@ method update*(scene: MainScene, elapsed: float) =
 
   scene.updateScene elapsed
 
-  if scene.mapSwitchCooldown <= 0.0:
-    if scene.player.pos.y <= 1.0:
-      scene.goUp()
-    elif scene.player.pos.y >= (GameHeight -
-                                scene.player.sprite.dim.h.float - 1.0):
-      scene.goDown()
-    elif scene.player.pos.x <= 1.0:
-      scene.goLeft()
-    elif scene.player.pos.x >= (GameWidth -
-                                scene.player.sprite.dim.w.float - 1.0):
-      scene.goRight()
+  # game ended
+  if playerLives < 0 or
+      (playerGoal >= playerTargetGoal):
+    let hi = checkForHiscore(uint(playerScore))
+    if hi >= 0:
+      game.scene = hiscoreScene
+      HiscoreScene(hiscoreScene).victory = (playerLives >= 0)
+      HiscoreScene(hiscoreScene).index = hi
+    else:
+      game.scene = titleScene
   else:
-    scene.mapSwitchCooldown -= elapsed
+    if scene.mapSwitchCooldown <= 0.0:
+      if scene.player.pos.y <= 1.0:
+        scene.goUp()
+      elif scene.player.pos.y >= (GameHeight -
+                                  scene.player.sprite.dim.h.float - 1.0):
+        scene.goDown()
+      elif scene.player.pos.x <= 1.0:
+        scene.goLeft()
+      elif scene.player.pos.x >= (GameWidth -
+                                  scene.player.sprite.dim.w.float - 1.0):
+        scene.goRight()
+    else:
+      scene.mapSwitchCooldown -= elapsed
 
-  # interface
-  try:
-    TextGraphic(scene.livesText.graphic).lines = ["LIVES: " & $playerLives]
-    TextGraphic(scene.scoreText.graphic).lines = ["SCORE: " & $playerScore]
-    TextGraphic(scene.goalText.graphic).lines = [
-      "EGGS: " & $playerGoal & "/" & $playerTargetGoal]
-  except:
-    discard
+    # interface
+    try:
+      TextGraphic(scene.livesText.graphic).lines = ["LIVES: " & $playerLives]
+      TextGraphic(scene.scoreText.graphic).lines = ["SCORE: " & $playerScore]
+      TextGraphic(scene.goalText.graphic).lines = [
+        "EGGS: " & $playerGoal & "/" & $playerTargetGoal]
+    except:
+      discard
 
