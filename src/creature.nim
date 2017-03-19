@@ -11,20 +11,18 @@ import
   map
 
 
-const
-  Framerate* = 1/12
-  DefaultSpeed* = 0.5
-
-
 type
   Direction* = enum dStay, dUp, dDown, dLeft, dRight
 
   Creature* = ref object of Entity
-    speed*: float
     prevDirection*: Direction
     tween*: Tween[Creature,Coord]
     map*: Map
     mapPos*: MapPos
+
+
+template framerate*(): float =
+  (speed / 4)
 
 
 proc placeTo*(c: Creature, mapPos: MapPos) =
@@ -37,14 +35,13 @@ proc init*(c: Creature, graphic: TextureGraphic, mapPos: MapPos, map: Map) =
   c.tags.add "creature"
   c.graphic = graphic
   c.initSprite(SpriteDim)
-  discard c.addAnimation("up",    toSeq(0..3),    Framerate)
-  discard c.addAnimation("down",  toSeq(4..7),    Framerate)
-  discard c.addAnimation("left",  toSeq(8..11),   Framerate)
-  discard c.addAnimation("right", toSeq(12..15),  Framerate)
-  discard c.addAnimation("death", [0, 4, 8, 12],  Framerate)
+  discard c.addAnimation("up",    toSeq(0..3),    framerate)
+  discard c.addAnimation("down",  toSeq(4..7),    framerate)
+  discard c.addAnimation("left",  toSeq(8..11),   framerate)
+  discard c.addAnimation("right", toSeq(12..15),  framerate)
+  discard c.addAnimation("death", [0, 4, 8, 12],  framerate)
   c.collider = c.newBoxCollider(SpriteDim / 2 - SpriteOffset, SpriteDim * 0.9)
   c.center = SpriteOffset
-  c.speed = DefaultSpeed
   c.map = map
   c.placeTo(mapPos)
 
@@ -82,26 +79,33 @@ proc move*(c: Creature, dir: Direction) =
   var
     anim: string
     mov: Coord
+    mapMov: MapPos
   case dir:
   of dStay:
     return
   of dUp:
     anim = "up"
     mov = (0.0, -c.sprite.dim.h.float)
+    mapMov = (0, -1)
   of dDown:
     anim = "down"
     mov = (0.0, c.sprite.dim.h.float)
+    mapMov = (0, 1)
   of dLeft:
     anim = "left"
     mov = (-c.sprite.dim.w.float, 0.0)
+    mapMov = (-1, 0)
   of dRight:
     anim = "right"
     mov = (c.sprite.dim.w.float, 0.0)
+    mapMov = (1, 0)
 
   if c.tween == nil or not c.tween.playing:
+    # fix pos
+    c.pos = c.mapPos.toCoord
     let
       newPos = c.pos + mov
-      newMapPos = toMapPos(newPos)
+      newMapPos = (c.mapPos.x + mapMov.x, c.mapPos.y + mapMov.y)
 
     c.play(anim, 1)
     c.tween = newTween[Creature,Coord](
@@ -109,7 +113,7 @@ proc move*(c: Creature, dir: Direction) =
       proc(t: Creature): Coord = t.pos,
       proc(t: Creature, val: Coord) = t.pos = val
     )
-    c.tween.setup(c.pos, newPos, c.speed, 0)
+    c.tween.setup(c.pos, newPos, speed, 0)
     c.tween.play()
     c.mapPos = newMapPos
     c.prevDirection = dir

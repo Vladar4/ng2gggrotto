@@ -18,7 +18,7 @@ const
   GameHeight*   = 600
   DefaultFont*  = "data/fnt/FSEX300.ttf"
   SpriteDim*: Dim     = (20, 20)
-  SpriteOffset*: Dim  = (1, 1)
+  SpriteOffset*: Dim  = (0, 0)
 
 
 type
@@ -47,6 +47,9 @@ var
   GoalsAmount* = 4
   EnemiesAmount* = 8
   # player
+  DefaultSpeed* = 0.6
+  SpeedAddition* = 0.015
+  speed* = DefaultSpeed
   StartPlayerLives* = 3
   playerLives* = 3
   playerScore* = 0

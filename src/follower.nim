@@ -22,6 +22,7 @@ proc init*(f: Follower, target: Creature, mapPos: MapPos, map: Map) =
   f.killed = false
   f.target = target
   f.collider.tags.add("enemy")
+  speed -= SpeedAddition
 
 
 proc newFollower*(target: Creature, mapPos: MapPos, map: Map): Follower =
@@ -35,19 +36,20 @@ proc kill*(f: Follower) =
     f.tween.stop()
   f.play("death", 2, true)
   dec scoreMultiplier
+  speed += SpeedAddition
 
 
 method update*(f: Follower, elapsed: float) =
   f.updateCreature elapsed
   if not f.killed:
     let
-      w = float(SpriteDim.w) / 1.1
-      h = float(SpriteDim.h) / 1.1
+      w = float(SpriteDim.w) / 1.2
+      h = float(SpriteDim.h) / 1.2
     if (f.target.pos.y < (f.pos.y - h)) and f.dirAvailable(dUp):
       f.move(dUp)
     elif (f.target.pos.y > (f.pos.y + h)) and f.dirAvailable(dDown):
       f.move(dDown)
-    elif (f.target.pos.x < (f.pos.x - w)) and f.dirAvailable(dLeft):
+    if (f.target.pos.x < (f.pos.x - w)) and f.dirAvailable(dLeft):
       f.move(dLeft)
     elif (f.target.pos.x > (f.pos.x + w)) and f.dirAvailable(dRight):
       f.move(dRight)

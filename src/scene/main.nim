@@ -44,8 +44,14 @@ type
 
 
 proc switchMap(scene: MainScene, idx: tuple[x, y: int]) =
+  if scene.currentMap != nil:
+    discard scene.del scene.currentMap
   scene.mapIdx = idx
   scene.currentMap = scene.mapGrid[idx.y][idx.x]
+  for t in scene.train:
+    t.map = scene.currentMap
+  scene.add scene.currentMap
+  echo scene.mapidx
 
 
 template player(scene: MainScene): Player =
@@ -79,7 +85,6 @@ proc init*(scene: MainScene) =
         occupied.add newPos
         inc playerTargetGoal
   scene.switchMap((0, 0))
-  scene.add scene.currentMap
   # player
   scene.train = @[]
   scene.train.add newPlayer(
@@ -161,18 +166,14 @@ proc changeMap(scene: MainScene, idx: tuple[x, y: int]) =
     if not item.dead:
       scene.itemGrid[y][x].add((item.kind, item.mapPos))
   scene.del "item"
-  discard scene.del scene.currentMap
+  # map
   scene.switchMap idx
-  # train
-  for t in scene.train:
-    t.map = scene.currentMap
   # enemies
   scene.del "enemy"
   for i in 1..EnemiesAmount:
     let e = newEnemy(1, random scene.currentMap.spawnPoints, scene.currentMap)
     e.layer = EnemyLayer
     scene.add e
-  scene.add scene.currentMap
   scene.mapSwitchCooldown = MapSwitchCooldown
   # items
   for i in scene.itemGrid[scene.mapIdx.y][scene.mapIdx.x]:
@@ -250,6 +251,8 @@ method update*(scene: MainScene, elapsed: float) =
       scene.train[^1].layer = FollowerLayer
       scene.add scene.train[^1]
   scoreMultiplier = scene.train.len
+  for t in scene.train:
+    t.changeFramerate(framerate)
 
   scene.updateScene elapsed
   if scene.mapSwitchCooldown <= 0.0:
