@@ -226,21 +226,34 @@ method update*(scene: MainScene, elapsed: float) =
   for i in scene.findAll "item":
     if i.dead:
       scene.add newBonusText(i.pos, $Item(i).price())
-  # kill
-  var
-    killNext = false
-    i = 1
-  while i < scene.train.len:
-    let f = Follower(scene.train[i])
-    if killNext:
-      if not f.killed:
-        f.kill()
-    elif f.killed:
-      killNext = true
-      if f.dead:
-        scene.train.delete i
-        dec i
-    inc i
+  # player death
+  if scene.player.killed:
+    while scene.train.len > 1:
+      let f = scene.train.pop()
+      Follower(f).kill()
+    if scene.player.dead:
+      dec playerLives
+      scene.del "player"
+      scene.changeMap((0, 0))
+      scene.train[0] = newPlayer(
+        (MapTileWidth div 2 + 1, MapTileHeight div 2 + 1), scene.currentMap)
+      scene.add scene.player
+  else:
+    # kill
+    var
+      killNext = false
+      i = 1
+    while i < scene.train.len:
+      let f = Follower(scene.train[i])
+      if killNext:
+        if not f.killed:
+          f.kill()
+      elif f.killed:
+        killNext = true
+        if f.dead:
+          scene.train.delete i
+          dec i
+      inc i
   # spawn
   for i in scene.findAll "spawn":
     if Item(i).spawn:
@@ -253,6 +266,9 @@ method update*(scene: MainScene, elapsed: float) =
   scoreMultiplier = scene.train.len
   for t in scene.train:
     t.changeFramerate(framerate)
+
+  # speed
+  speed = DefaultSpeed - SpeedAddition * scene.train.high.float
 
   scene.updateScene elapsed
 

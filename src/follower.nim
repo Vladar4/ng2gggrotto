@@ -21,8 +21,7 @@ proc init*(f: Follower, target: Creature, mapPos: MapPos, map: Map) =
   f.tags.add "follower"
   f.killed = false
   f.target = target
-  f.collider.tags.add("enemy")
-  speed -= SpeedAddition
+  f.collider.tags.add "enemy"
 
 
 proc newFollower*(target: Creature, mapPos: MapPos, map: Map): Follower =
@@ -36,7 +35,6 @@ proc kill*(f: Follower) =
     f.tween.stop()
   f.play("death", 2, true)
   dec scoreMultiplier
-  speed += SpeedAddition
 
 
 method update*(f: Follower, elapsed: float) =
