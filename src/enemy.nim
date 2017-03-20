@@ -31,6 +31,15 @@ proc perpendiculars(dir: Direction): tuple[a, b: Direction] =
   else: (dStay, dStay)
 
 
+proc opposite(dir: Direction): Direction =
+  return case dir:
+  of dUp: dDown
+  of dDown: dUp
+  of dLeft: dRight
+  of dRight: dLeft
+  else: dStay
+
+
 method update*(e: Enemy, elapsed: float) =
   e.updateCreature elapsed
   let perp = perpendiculars(e.prevDirection)
@@ -42,6 +51,8 @@ method update*(e: Enemy, elapsed: float) =
   else:
     var choice = @[dUp, dDown, dLeft, dRight]
     shuffle choice
+    if (choice.len > 2) and e.dirAvailable(e.prevDirection):
+      choice.delete(choice.find e.prevDirection.opposite)
 
     for dir in choice:
       if e.dirAvailable dir:
