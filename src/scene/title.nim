@@ -16,7 +16,7 @@ import
 
 type
   TitleScene = ref object of Scene
-    scoreText: TextGraphic
+    scoreText, infoText: TextGraphic
     scoreboard: Entity
 
 
@@ -35,11 +35,21 @@ proc init*(scene: TitleScene) =
   scene.scoreText = newTextGraphic defaultFont
   scene.scoreboard = newEntity()
   scene.scoreboard.graphic = scene.scoreText
-  scene.scoreboard.pos = (16, 220)
+  scene.scoreboard.pos = (16, 212)
   scene.add scene.scoreboard
+
+  # info
+  scene.infoText = newTextGraphic bonusFont
+  scene.infoText.lines = [GameInfo]
+  let info = newEntity()
+  info.graphic = scene.infoText
+  info.centrify(hor = HAlign.left, ver = VAlign.bottom)
+  info.pos = (4.0, game.size.h.float - 4.0)
+  scene.add info
 
 
 proc free*(scene: TitleScene) =
+  free scene.infoText
   free scene.scoreText
   freeData()
 
