@@ -27,7 +27,7 @@ proc init*(scene: TitleScene) =
   let title = newEntity()
   title.graphic = gfxData["titlescreen"]
   title.centrify(ver = VAlign.top)
-  title.pos = (game.size.w / 2, 20.0)
+  title.pos = (game.size.w / 2, 0.0)
   scene.add title
 
   # scoreboard
@@ -35,7 +35,7 @@ proc init*(scene: TitleScene) =
   scene.scoreText = newTextGraphic defaultFont
   scene.scoreboard = newEntity()
   scene.scoreboard.graphic = scene.scoreText
-  scene.scoreboard.pos = (16, 200)
+  scene.scoreboard.pos = (16, 220)
   scene.add scene.scoreboard
 
 
@@ -52,7 +52,7 @@ proc newTitleScene*(): TitleScene =
 method show*(scene: TitleScene) =
   initHiscores()
   scene.scoreText.lines = [
-    "- - - - HISCORES - - - -",
+    "        HISCORES        ",
     hiscores[0].name.toString & " " & $hiscores[0].score,
     hiscores[1].name.toString & " " & $hiscores[1].score,
     hiscores[2].name.toString & " " & $hiscores[2].score,
@@ -72,6 +72,8 @@ method event*(scene: TitleScene, event: Event) =
     case event.key.keysym.sym:
     of K_F11:
       showInfo = not showInfo
+    of K_Escape:
+      gameRunning = false
     else:
       mainScene = newMainScene()
       game.scene = mainScene
