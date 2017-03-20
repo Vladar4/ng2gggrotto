@@ -12,7 +12,7 @@ import
 
 const
   GameTitle*    = "Glorious Glacier Grotto"
-  GameIcon*     = "" #TODO "gggrotto.png"
+  GameIcon*     = "data/gggrotto.png"
   GameVersion*  = "1.0"
   GameInfo*     = GameTitle & " " & GameVersion & " Copyright © 2017 Vladar"
   GameWidth*    = 960
