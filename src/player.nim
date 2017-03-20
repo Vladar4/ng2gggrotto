@@ -12,7 +12,13 @@ import
 
 type
   Player* = ref object of Creature
+    lastPressed*: Direction
+    pressTime*: float
     killed*: bool
+
+
+template pressTimeLimit(): float =
+  speed
 
 
 proc init*(p: Player, mapPos: MapPos, map: Map) =
@@ -36,11 +42,30 @@ proc kill*(p: Player) =
 method update*(p: Player, elapsed: float) =
   p.updateCreature elapsed
   if not p.killed:
-    if moveUp.down and p.dirAvailable(dUp): p.move(dUp)
-    elif moveDown.down and p.dirAvailable(dDown): p.move(dDown)
-    elif moveLeft.down and p.dirAvailable(dLeft): p.move(dLeft)
-    elif moveRight.down and p.dirAvailable(dRight): p.move(dRight)
-    elif p.dirAvailable(p.prevDirection): p.move(p.prevDirection)
+    if moveUp.down:
+      p.lastPressed = dUp
+      p.pressTime = pressTimeLimit
+    elif moveDown.down:
+      p.lastPressed = dDown
+      p.pressTime = pressTimeLimit
+    elif moveLeft.down:
+      p.lastPressed = dLeft
+      p.pressTime = pressTimeLimit
+    elif moveRight.down:
+      p.lastPressed = dRight
+      p.pressTime = pressTimeLimit
+    else:
+      if p.pressTime > 0.0:
+        p.pressTime -= elapsed
+        if p.pressTime < 0.0:
+          p.pressTime = 0.0
+      if p.pressTime == 0.0:
+        p.lastPressed = dStay
+
+    if (p.lastPressed != dStay) and p.dirAvailable(p.lastPressed):
+      p.move(p.lastPressed)
+    elif p.dirAvailable(p.prevDirection):
+      p.move(p.prevDirection)
 
 
 method onCollide*(p: Player, target: Entity) =
