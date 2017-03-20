@@ -80,6 +80,8 @@ method event*(scene: TitleScene, event: Event) =
   scene.eventScene event
   if event.kind == KeyDown:
     case event.key.keysym.sym:
+    of K_F1..K_F10, K_F12, K_PrintScreen:
+      discard
     of K_F11:
       showInfo = not showInfo
     of K_Escape:
