@@ -19,7 +19,7 @@ proc init*(bt: BonusText, pos: Coord, text: string) =
   initEntity bt
   bt.layer = 1000
   let t = newTextGraphic bonusFont
-  t.color = 0x30C030FF'u32
+  t.color = BonusTextColor
   t.lines = [text]
   bt.graphic = t
   bt.centrify()

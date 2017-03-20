@@ -18,6 +18,7 @@ import
   ../follower,
   ../item,
   ../map,
+  ../multipliertext,
   ../player,
   ../score,
   hiscore
@@ -228,6 +229,8 @@ method update*(scene: MainScene, elapsed: float) =
   for i in scene.findAll "item":
     if i.dead:
       scene.add newBonusText(i.pos, $Item(i).price())
+      if "spawn" in i.tags:
+        scene.add newMultiplierText(i.pos, "x" & $(scene.train.len + 1))
   # player death
   if scene.player.killed:
     while scene.train.len > 1:

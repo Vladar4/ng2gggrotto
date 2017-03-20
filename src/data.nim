@@ -19,6 +19,7 @@ const
   DefaultFont*  = "data/fnt/FSEX300.ttf"
   SpriteDim*: Dim     = (20, 20)
   SpriteOffset*: Dim  = (0, 0)
+  BonusTextColor* = 0x30A030FF'u32
 
 
 type
