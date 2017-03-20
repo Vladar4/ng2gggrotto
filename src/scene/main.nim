@@ -276,7 +276,7 @@ method update*(scene: MainScene, elapsed: float) =
       scene.add scene.train[^1]
   scoreMultiplier = scene.train.len
   for t in scene.train:
-    t.changeFramerate(framerate)
+    t.changeFramerate(t.framerate)
 
   # speed
   speed = DefaultSpeed - SpeedAddition * scene.train.high.float

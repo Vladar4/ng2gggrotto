@@ -50,7 +50,7 @@ var
   EnemiesAmount* = 8
   # player
   DefaultSpeed* = 0.6
-  SpeedAddition* = 0.015
+  SpeedAddition* = 0.025
   speed* = DefaultSpeed
   StartPlayerLives* = 3
   playerLives* = 3

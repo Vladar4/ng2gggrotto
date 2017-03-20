@@ -21,8 +21,15 @@ type
     mapPos*: MapPos
 
 
-template framerate*(): float =
-  (speed / 4)
+proc currSpeed(c: Creature): float =
+  if "enemy" in c.tags:
+    DefaultSpeed
+  else:
+    speed
+
+
+proc framerate*(c: Creature): float =
+  (c.currSpeed / 4)
 
 
 proc placeTo*(c: Creature, mapPos: MapPos) =
@@ -35,11 +42,11 @@ proc init*(c: Creature, graphic: TextureGraphic, mapPos: MapPos, map: Map) =
   c.tags.add "creature"
   c.graphic = graphic
   c.initSprite(SpriteDim)
-  discard c.addAnimation("up",    toSeq(0..3),    framerate)
-  discard c.addAnimation("down",  toSeq(4..7),    framerate)
-  discard c.addAnimation("left",  toSeq(8..11),   framerate)
-  discard c.addAnimation("right", toSeq(12..15),  framerate)
-  discard c.addAnimation("death", [0, 4, 8, 12],  framerate)
+  discard c.addAnimation("up",    toSeq(0..3),    c.framerate)
+  discard c.addAnimation("down",  toSeq(4..7),    c.framerate)
+  discard c.addAnimation("left",  toSeq(8..11),   c.framerate)
+  discard c.addAnimation("right", toSeq(12..15),  c.framerate)
+  discard c.addAnimation("death", [0, 4, 8, 12],  c.framerate)
   c.play("down", 0)
   c.collider = c.newBoxCollider(SpriteDim / 2 - SpriteOffset, SpriteDim * 0.9)
   c.center = SpriteOffset
@@ -114,7 +121,7 @@ proc move*(c: Creature, dir: Direction) =
       proc(t: Creature): Coord = t.pos,
       proc(t: Creature, val: Coord) = t.pos = val
     )
-    c.tween.setup(c.pos, newPos, speed, 0)
+    c.tween.setup(c.pos, newPos, c.currSpeed, 0)
     c.tween.play()
     c.mapPos = newMapPos
     c.prevDirection = dir
