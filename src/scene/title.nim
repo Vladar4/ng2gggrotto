@@ -85,6 +85,6 @@ method event*(scene: TitleScene, event: Event) =
     of K_Escape:
       gameRunning = false
     else:
-      mainScene = newMainScene()
-      game.scene = mainScene
+      echo "starting new one"
+      game.scene = newMainScene()
 

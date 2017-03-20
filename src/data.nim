@@ -36,7 +36,7 @@ proc toMapPos*(pos: Coord, size = SpriteDim): MapPos {.inline.} =
 
 
 var
-  introScene*, titleScene*, mainScene*, hiscoreScene*: Scene
+  introScene*, titleScene*, hiscoreScene*: Scene
   defaultFont*, bonusFont*: TrueTypeFont
   gfxData*: Assets[TextureGraphic]
   sfxData*: Assets[Sound]

@@ -150,6 +150,7 @@ method event*(scene: MainScene, event: Event) =
     case event.key.keysym.sym:
     of K_X:
       if gamePaused:
+        gamePaused = false
         game.scene = titleScene
     of K_Escape, K_P:
       gamePaused = not gamePaused
