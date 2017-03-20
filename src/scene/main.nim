@@ -272,7 +272,7 @@ method update*(scene: MainScene, elapsed: float) =
         scene.train[^1],
         Item(i).mapPos,
         scene.currentMap)
-      scene.train[^1].layer = FollowerLayer
+      scene.train[^1].layer = FollowerLayer - scene.train.len
       scene.add scene.train[^1]
   scoreMultiplier = scene.train.len
   for t in scene.train:
