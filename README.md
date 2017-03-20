@@ -24,6 +24,8 @@ WASD or arrow keys.
 Links
 -----
 
+[itch.io page](https://vladar.itch.io/glorious-glacier-grotto)
+
 [v1.0 release (binaries)](https://github.com/Vladar4/ng2gggrotto/releases/tag/v1.0)
 
 --------
