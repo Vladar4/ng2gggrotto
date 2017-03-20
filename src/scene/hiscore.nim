@@ -46,7 +46,7 @@ proc init*(scene: HiscoreScene) =
   scene.input.pos = game.size / 2
   scene.add scene.input
   # screens
-  let screenpos = (game.size.w / 2, game.size.h / 2 + 16)
+  let screenpos = (game.size.w / 2, game.size.h / 2 + 32)
   scene.winscreen = newEntity()
   scene.winscreen.graphic = gfxData["winscreen"]
   scene.winscreen.centrify(ver = VAlign.top)

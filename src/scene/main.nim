@@ -283,9 +283,9 @@ method update*(scene: MainScene, elapsed: float) =
       (playerGoal >= playerTargetGoal):
     let hi = checkForHiscore(uint(playerScore))
     if hi >= 0:
-      game.scene = hiscoreScene
       HiscoreScene(hiscoreScene).victory = (playerLives >= 0)
       HiscoreScene(hiscoreScene).index = hi
+      game.scene = hiscoreScene
     else:
       game.scene = titleScene
   else:
