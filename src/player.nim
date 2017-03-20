@@ -1,6 +1,7 @@
 import
   nimgame2 / [
     assets,
+    audio,
     entity,
     input,
     tween,
@@ -37,6 +38,8 @@ proc kill*(p: Player) =
   if p.tween != nil:
     p.tween.stop()
   p.play("death", 2, true)
+  if not sfxData["death_1"].playing:
+    discard sfxData["death_1"].play()
 
 
 method update*(p: Player, elapsed: float) =

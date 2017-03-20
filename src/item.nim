@@ -1,6 +1,7 @@
 import
   nimgame2 / [
     assets,
+    audio,
     collider,
     entity,
     nimgame,
@@ -68,6 +69,15 @@ method onCollide*(item: Item, target: Entity) =
     item.dead = true
     item.spawn = true
     playerScore += item.price()
-    if item.kind == ikSpawn:
+
+    var sound: Sound
+    case item.kind:
+    of ikSmall, ikBig:
+      sound = sfxData["quack_1"]
+    of ikSpawn:
       inc playerGoal
+      sound = sfxData["quack_2"]
+
+    if not sound.playing:
+      discard sound.play()
 

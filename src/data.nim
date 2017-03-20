@@ -39,7 +39,7 @@ var
   introScene*, titleScene*, mainScene*, hiscoreScene*: Scene
   defaultFont*, bonusFont*: TrueTypeFont
   gfxData*: Assets[TextureGraphic]
-  #TODO sfxData*: Assets[Sound]
+  sfxData*: Assets[Sound]
   moveUp* = [ScancodeUp, ScancodeW]
   moveDown* = [ScancodeDown, ScancodeS]
   moveLeft* = [ScancodeLeft, ScancodeA]
@@ -71,16 +71,15 @@ proc loadData*() =
   # GFX
   gfxData = newAssets[TextureGraphic]("data/gfx",
     proc(file: string): TextureGraphic = newTextureGraphic(file))
-  #TODO SFX
-  #sfxData = newAssets[Sound]("data/sfx",
-  #  proc(file: string): Sound = newSound(file))
+  # SFX
+  sfxData = newAssets[Sound]("data/sfx",
+    proc(file: string): Sound = newSound(file))
 
 
 proc freeData*() =
   defaultFont.free()
   for gfx in gfxData.values:
     gfx.free()
-  #TODO
-  #for sfx in sfxData.values:
-  #  sfx.free()
+  for sfx in sfxData.values:
+    sfx.free()
 

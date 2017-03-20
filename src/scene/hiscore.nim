@@ -1,6 +1,7 @@
 import
   nimgame2 / [
     assets,
+    audio,
     nimgame,
     entity,
     font,
@@ -65,6 +66,8 @@ method show*(scene: HiscoreScene) =
   scene.winscreen.visible = scene.victory
   scene.losescreen.visible = not scene.victory
   TextField(scene.input.graphic).activate()
+  if scene.victory:
+    discard sfxData["victory"].play()
 
 
 proc free*(scene: HiscoreScene) =

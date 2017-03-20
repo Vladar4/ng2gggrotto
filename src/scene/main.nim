@@ -36,7 +36,7 @@ const
 
 
 type
-  MainScene = ref object of Scene
+  MainScene* = ref object of Scene
     mapGrid: array[MapRows, array[MapCols, Map]]
     itemGrid: array[MapRows, array[MapCols, seq[tuple[kind: ItemKind, pos: MapPos]]]]
     mapIdx: tuple[x, y: int]
@@ -148,6 +148,9 @@ method event*(scene: MainScene, event: Event) =
   scene.eventScene event
   if event.kind == KeyDown:
     case event.key.keysym.sym:
+    of K_X:
+      if gamePaused:
+        game.scene = titleScene
     of K_Escape, K_P:
       gamePaused = not gamePaused
       scene.pause.visible = gamePaused
@@ -181,7 +184,6 @@ proc changeMap(scene: MainScene, idx: tuple[x, y: int]) =
   # items
   for i in scene.itemGrid[scene.mapIdx.y][scene.mapIdx.x]:
     scene.add newItem(i.kind, i.pos)
-  #GC_fullCollect()
 
 
 template goUp(scene: MainScene) =
@@ -232,7 +234,10 @@ method update*(scene: MainScene, elapsed: float) =
       if "spawn" in i.tags:
         scene.add newMultiplierText(i.pos, "x" & $(scene.train.len + 1))
   # player death
+  var
+    killNext = false
   if scene.player.killed:
+    killNext = true
     while scene.train.len > 1:
       let f = scene.train.pop()
       Follower(f).kill()
@@ -247,7 +252,6 @@ method update*(scene: MainScene, elapsed: float) =
   else:
     # kill
     var
-      killNext = false
       i = 1
     while i < scene.train.len:
       let f = Follower(scene.train[i])

@@ -1,6 +1,7 @@
 import
   nimgame2 / [
     assets,
+    audio,
     entity,
     tween,
     types,
@@ -35,6 +36,8 @@ proc kill*(f: Follower) =
     f.tween.stop()
   f.play("death", 2, true)
   dec scoreMultiplier
+  if not sfxData["death_2"].playing:
+    discard sfxData["death_2"].play()
 
 
 method update*(f: Follower, elapsed: float) =
