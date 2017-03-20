@@ -52,7 +52,9 @@ method update*(e: Enemy, elapsed: float) =
     var choice = @[dUp, dDown, dLeft, dRight]
     shuffle choice
     if (choice.len > 2) and e.dirAvailable(e.prevDirection):
-      choice.delete(choice.find e.prevDirection.opposite)
+      let idx = choice.find e.prevDirection.opposite
+      if idx >= 0:
+        choice.delete idx
 
     for dir in choice:
       if e.dirAvailable dir:

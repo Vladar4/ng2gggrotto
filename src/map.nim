@@ -326,7 +326,10 @@ proc generate*(map: Map, minimalSize = MinimalMapSize) =
 
   proc middle(s: seq[int]): int =
     let mid = s.len div 2
-    random([s[mid-1], s[mid]])
+    if mid > 0:
+      random([s[mid-1], s[mid]])
+    else:
+      s[mid]
 
   # add exits
   block exitU:
