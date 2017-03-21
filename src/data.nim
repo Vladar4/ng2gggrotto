@@ -49,7 +49,7 @@ var
   GoalsAmount* = 4
   EnemiesAmount* = 8
   # player
-  DefaultSpeed* = 0.6
+  DefaultSpeed* = 0.5
   SpeedAddition* = 0.025
   speed* = DefaultSpeed
   StartPlayerLives* = 3
