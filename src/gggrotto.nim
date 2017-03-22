@@ -6,6 +6,8 @@ import
   ],
   data,
   scene / [
+    config,
+    info,
     intro,
     title,
     main,
@@ -26,6 +28,8 @@ if game.init(GameWidth, GameHeight,
   # Scenes
   introScene = newIntroScene()
   titleScene = newTitleScene()
+  configScene = newConfigScene()
+  infoScene = newInfoScene()
   hiscoreScene = newHiscoreScene()
   # Run
   game.scene = introScene

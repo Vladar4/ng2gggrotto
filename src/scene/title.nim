@@ -57,13 +57,13 @@ proc init*(scene: TitleScene) =
   scene.add scene.btnPlay
 
   scene.btnConfig = newMenuButton(center + step, width,
-    proc(btn: MenuButton) {.locks:0.} = echo("TODO"),
+    proc(btn: MenuButton) {.locks:0.} = game.scene = configScene,
     "CONFIG")
   scene.btnConfig.centrify()
   scene.add scene.btnConfig
 
   scene.btnInfo = newMenuButton(center + step * 2.0, width,
-    proc(btn: MenuButton) {.locks:0.} = echo("TODO"),
+    proc(btn: MenuButton) {.locks:0.} = game.scene = infoScene,
     "INFO")
   scene.btnInfo.centrify()
   scene.add scene.btnInfo
@@ -119,8 +119,6 @@ method event*(scene: TitleScene, event: Event) =
   scene.eventScene event
   if event.kind == KeyDown:
     case event.key.keysym.sym:
-    of K_F1..K_F9, K_F12, K_PrintScreen:
-      discard
     of K_F10:
       colliderOutline = not colliderOutline
     of K_F11:
