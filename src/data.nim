@@ -3,6 +3,7 @@ import
     assets,
     audio,
     input,
+    mosaic,
     scene,
     texturegraphic,
     truetypefont,
@@ -40,6 +41,7 @@ var
   defaultFont*, bonusFont*: TrueTypeFont
   gfxData*: Assets[TextureGraphic]
   sfxData*: Assets[Sound]
+  buttonMosaic*: Mosaic
   moveUp* = [ScancodeUp, ScancodeW]
   moveDown* = [ScancodeDown, ScancodeS]
   moveLeft* = [ScancodeLeft, ScancodeA]
@@ -75,12 +77,16 @@ proc loadData*() =
   # SFX
   sfxData = newAssets[Sound]("data/sfx",
     proc(file: string): Sound = newSound(file))
+  # Mosaic
+  buttonMosaic = newMosaic("data/gui/button.png", (8, 8))
 
 
 proc freeData*() =
   defaultFont.free()
+  bonusFont.free()
   for gfx in gfxData.values:
     gfx.free()
   for sfx in sfxData.values:
     sfx.free()
+  buttonMosaic.free()
 

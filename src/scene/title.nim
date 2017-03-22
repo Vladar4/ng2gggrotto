@@ -9,6 +9,7 @@ import
     texturegraphic,
     types,
   ],
+  ../menubutton,
   ../data,
   ../score,
   main
@@ -18,17 +19,13 @@ type
   TitleScene = ref object of Scene
     scoreText, infoText: TextGraphic
     scoreboard: Entity
+    btnPlay, btnConfig, btnInfo, btnExit: MenuButton
+    exit: bool
 
 
 proc init*(scene: TitleScene) =
   init Scene(scene)
-
-  # title
-  let title = newEntity()
-  title.graphic = gfxData["titlescreen"]
-  title.centrify(ver = VAlign.top)
-  title.pos = (game.size.w / 2, 0.0)
-  scene.add title
+  scene.exit = false
 
   # scoreboard
   initHiscores()
@@ -47,10 +44,52 @@ proc init*(scene: TitleScene) =
   info.pos = (4.0, game.size.h.float - 4.0)
   scene.add info
 
+  # buttons
+  let
+    center = (game.size.w / 2, game.size.h / 2 - 32)
+    step = (0.0, 64.0)
+    width = 6
+
+  scene.btnPlay = newMenuButton(center, width,
+    proc(btn: MenuButton) {.locks:0.} = game.scene = newMainScene(),
+    "PLAY")
+  scene.btnPlay.centrify()
+  scene.add scene.btnPlay
+
+  scene.btnConfig = newMenuButton(center + step, width,
+    proc(btn: MenuButton) {.locks:0.} = echo("TODO"),
+    "CONFIG")
+  scene.btnConfig.centrify()
+  scene.add scene.btnConfig
+
+  scene.btnInfo = newMenuButton(center + step * 2.0, width,
+    proc(btn: MenuButton) {.locks:0.} = echo("TODO"),
+    "INFO")
+  scene.btnInfo.centrify()
+  scene.add scene.btnInfo
+
+  scene.btnExit = newMenuButton(center + step * 3.0, width,
+    proc(btn: MenuButton) {.locks:0.} = scene.exit = true,
+    "EXIT")
+  scene.btnExit.centrify()
+  scene.add scene.btnExit
+
+  # title
+  let title = newEntity()
+  title.graphic = gfxData["titlescreen"]
+  title.centrify(ver = VAlign.top)
+  title.pos = (game.size.w / 2, 0.0)
+  scene.add title
+
+
 
 proc free*(scene: TitleScene) =
   free scene.infoText
   free scene.scoreText
+  free scene.btnPlay
+  free scene.btnConfig
+  free scene.btnInfo
+  free scene.btnExit
   freeData()
 
 
@@ -80,12 +119,18 @@ method event*(scene: TitleScene, event: Event) =
   scene.eventScene event
   if event.kind == KeyDown:
     case event.key.keysym.sym:
-    of K_F1..K_F10, K_F12, K_PrintScreen:
+    of K_F1..K_F9, K_F12, K_PrintScreen:
       discard
+    of K_F10:
+      colliderOutline = not colliderOutline
     of K_F11:
       showInfo = not showInfo
-    of K_Escape:
-      gameRunning = false
     else:
-      game.scene = newMainScene()
+      discard
+
+
+method update*(scene: TitleScene, elapsed: float) =
+  scene.updateScene elapsed
+  if scene.exit:
+    gameRunning = false
 
