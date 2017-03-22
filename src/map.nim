@@ -240,6 +240,33 @@ proc generate*(map: Map, minimalSize = MinimalMapSize) =
   init t
   generate t
 
+  # connect opposing dead ends
+  for y in 0..<MapTriadHeight:
+    for x in 0..<MapTriadWidth:
+      case t[y][x]:
+      of U:
+        if y < (MapTriadHeight - 1):
+          if t[y+1][x] == D:
+            t[y][x] = UD
+            t[y+1][x] = UD
+      of D:
+        if y > 0:
+          if t[y-1][x] == U:
+            t[y][x] = UD
+            t[y-1][x] = UD
+      of L:
+        if x < (MapTriadWidth - 1):
+          if t[y][x+1] == R:
+            t[y][x] = LR
+            t[y][x+1] = LR
+      of R:
+        if x > 0:
+          if t[y][x-1] == L:
+            t[y][x] = LR
+            t[y][x-1] = LR
+      else:
+        discard
+
   # check size
   var counter = 0
   for y in 0..<MapTriadHeight:
