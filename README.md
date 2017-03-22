@@ -26,7 +26,9 @@ Links
 
 [itch.io page](https://vladar.itch.io/glorious-glacier-grotto)
 
-[v1.01 release (binaries)](https://github.com/Vladar4/ng2gggrotto/releases/tag/v1.01)
+[v1.2 release (binaries)] (https://github.com/Vladar4/ng2gggrotto/releases/tag/v1.2) — Latest version
+
+[v1.01 release (binaries)](https://github.com/Vladar4/ng2gggrotto/releases/tag/v1.01) — Linux Game Jam 2017 version
 
 --------
 
