@@ -36,9 +36,7 @@ proc init*(scene: IntroScene) =
     proc(t: Entity, val: Coord) = t.pos = val)
   scene.logo = newEntity()
   scene.logo.graphic = gfxData["ng2logo"]
-  scene.logo.parent = scene.player
   scene.logo.centrify(HAlign.left, VAlign.bottom)
-  scene.logo.pos += (23.0, -1 + 1.6 * scene.player.sprite.dim.h.float)
   scene.add scene.logo
 
 
@@ -47,6 +45,8 @@ proc free*(scene: IntroScene) =
 
 
 method show*(scene: IntroScene) =
+  scene.logo.parent = scene.player
+  scene.logo.pos += (23.0, -1 + 1.6 * scene.player.sprite.dim.h.float)
   scene.player.pos = (
     game.size.w.float + scene.player.sprite.dim.w.float,
     game.size.h.float - 1.6 * scene.player.sprite.dim.h.float)

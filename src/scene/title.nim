@@ -18,7 +18,7 @@ import
 type
   TitleScene = ref object of Scene
     scoreText, infoText: TextGraphic
-    scoreboard: Entity
+    scoreboard, logo: Entity
     btnPlay, btnConfig, btnInfo, btnExit: MenuButton
     exit: bool
 
@@ -26,6 +26,15 @@ type
 proc init*(scene: TitleScene) =
   init Scene(scene)
   scene.exit = false
+
+  # logo
+  scene.logo = newEntity()
+  scene.logo.graphic = gfxData["ng2logo"]
+  scene.logo.centrify(HAlign.right, VAlign.bottom)
+  scene.logo.pos = (
+    game.size.w.float - 7.0,
+    game.size.h.float - 1.0)
+  scene.add scene.logo
 
   # scoreboard
   initHiscores()
