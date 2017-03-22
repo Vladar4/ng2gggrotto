@@ -279,7 +279,10 @@ method update*(scene: MainScene, elapsed: float) =
     t.changeFramerate(t.framerate)
 
   # speed
-  speed = DefaultSpeed - SpeedAddition * scene.train.high.float
+  speed = clamp(
+    DefaultSpeed - SpeedAddition * scene.train.high.float,
+    FastestSpeed,
+    DefaultSpeed)
 
   scene.updateScene elapsed
 
