@@ -1,8 +1,8 @@
 import
   nimgame2 / [
     assets,
-    nimgame,
     entity,
+    nimgame,
     scene,
     settings,
     textgraphic,
