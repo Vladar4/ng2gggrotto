@@ -45,8 +45,6 @@ proc free*(scene: IntroScene) =
 
 
 method show*(scene: IntroScene) =
-  scene.logo.parent = scene.player
-  scene.logo.pos += (23.0, -1 + 1.6 * scene.player.sprite.dim.h.float)
   scene.player.pos = (
     game.size.w.float + scene.player.sprite.dim.w.float,
     game.size.h.float - 1.6 * scene.player.sprite.dim.h.float)
@@ -56,6 +54,8 @@ method show*(scene: IntroScene) =
     introSpeed * 220.0 / scene.player.sprite.dim.w.float, 0)
   scene.tween.play()
   scene.player.play("left", -1)
+  scene.logo.parent = scene.player
+  scene.logo.pos = (23.0, -1 + 1.6 * scene.player.sprite.dim.h.float)
 
 
 proc newIntroScene*(): IntroScene =

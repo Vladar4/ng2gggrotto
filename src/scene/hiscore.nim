@@ -110,7 +110,7 @@ method event(scene: HiscoreScene, event: Event) =
       hiscores[scene.index].name = text.text.toName
       hiscores[scene.index].score = playerScore.uint
       writeHiscores()
-      game.scene = introScene
+      game.scene = titleScene
     else:
       discard
   elif event.kind == TextInput:
