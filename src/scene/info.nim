@@ -9,8 +9,9 @@ import
     texturegraphic,
     types,
   ],
-  ../menubutton,
+  ../cfg,
   ../data,
+  ../menubutton,
   main
 
 
@@ -122,6 +123,12 @@ method event*(scene: InfoScene, event: Event) =
       showInfo = not showInfo
     of K_Escape:
       game.scene = titleScene
+    of K_N:
+      muteSound = not muteSound
+      syncCfg(true)
+    of K_M:
+      muteMusic = not muteMusic
+      syncCfg(true)
     else:
       discard
 

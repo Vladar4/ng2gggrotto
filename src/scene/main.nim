@@ -12,6 +12,7 @@ import
     utils,
   ],
   ../bonustext,
+  ../cfg,
   ../creature,
   ../data,
   ../enemy,
@@ -159,6 +160,12 @@ method event*(scene: MainScene, event: Event) =
       colliderOutline = not colliderOutline
     of K_F11:
       showInfo = not showInfo
+    of K_N:
+      muteSound = not muteSound
+      syncCfg(true)
+    of K_M:
+      muteMusic = not muteMusic
+      syncCfg(true)
     else:
       discard
 

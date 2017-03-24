@@ -9,8 +9,9 @@ import
     texturegraphic,
     types,
   ],
-  ../menubutton,
+  ../cfg,
   ../data,
+  ../menubutton,
   ../score,
   main
 
@@ -132,6 +133,12 @@ method event*(scene: TitleScene, event: Event) =
       colliderOutline = not colliderOutline
     of K_F11:
       showInfo = not showInfo
+    of K_N:
+      muteSound = not muteSound
+      syncCfg(true)
+    of K_M:
+      muteMusic = not muteMusic
+      syncCfg(true)
     of K_Return, K_Space:
       game.scene = newMainScene()
     else:

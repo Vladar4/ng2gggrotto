@@ -145,9 +145,11 @@ method event*(scene: ConfigScene, event: Event) =
       game.scene = titleScene
     of K_N:
       muteSound = not muteSound
+      scene.btnMuteSound.toggled = muteSound
       syncCfg(true)
     of K_M:
       muteMusic = not muteMusic
+      scene.btnMuteMusic.toggled = muteMusic
       syncCfg(true)
     else:
       discard
