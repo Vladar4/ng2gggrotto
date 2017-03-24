@@ -78,6 +78,6 @@ method onCollide*(item: Item, target: Entity) =
       inc playerGoal
       sound = sfxData["quack_2"]
 
-    if not sound.playing:
-      discard sound.play()
+    #if not sound.playing:
+    discard sound.play()
 
