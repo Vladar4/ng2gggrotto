@@ -4,6 +4,7 @@ import
     settings,
     types,
   ],
+  cfg,
   data,
   scene / [
     config,
@@ -25,6 +26,7 @@ if game.init(GameWidth, GameHeight,
   game.minSize = (GameWidth div 2, int GameHeight div 2)
   game.centrify()
   loadData()
+  syncCfg()
   # Scenes
   introScene = newIntroScene()
   titleScene = newTitleScene()

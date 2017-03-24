@@ -1,17 +1,18 @@
 import
   nimgame2 / [
     assets,
-    nimgame,
     entity,
     gui/widget,
+    nimgame,
     scene,
     settings,
     textgraphic,
     texturegraphic,
     types,
   ],
-  ../menubutton,
+  ../cfg,
   ../data,
+  ../menubutton,
   ../volbutton,
   main
 
@@ -20,7 +21,7 @@ type
   ConfigScene = ref object of Scene
     labelSound, labelMusic, infoText: TextGraphic
     btnsSound, btnsMusic: VolGroup
-    btnBack: MenuButton
+    btnMuteSound, btnMuteMusic, btnBack: MenuButton
 
 
 proc init*(scene: ConfigScene) =
@@ -40,6 +41,7 @@ proc init*(scene: ConfigScene) =
     center = (game.size.w.float / 3.25, game.size.h / 2 - 32)
     step = (0.0, 64.0)
     width = 6
+    lblOffset = (64.0, 24.0)
 
   # btnsSound
   let soundPos: Coord = (219.0, 300.0)
@@ -48,7 +50,7 @@ proc init*(scene: ConfigScene) =
   let lblS = newEntity()
   lblS.graphic = scene.labelSound
   lblS.centrify(hor = HAlign.right, ver = VAlign.top)
-  lblS.pos = soundPos - (8.0, 10.0)
+  lblS.pos = soundPos - lblOffset
   scene.add lblS
   for i in 0..<VolSteps:
     scene.btnsSound[i] = newVolButton(
@@ -56,7 +58,7 @@ proc init*(scene: ConfigScene) =
   for i in 0..<VolSteps:
     scene.btnsSound[i].group = scene.btnsSound
     scene.add scene.btnsSound[i]
-  scene.btnsSound[^1].toggled = true # TODO read config
+  scene.btnsSound[^1].toggled = true
 
   # btnsMusic
   let musicPos: Coord = (219.0, 380.0)
@@ -65,7 +67,7 @@ proc init*(scene: ConfigScene) =
   let lblM = newEntity()
   lblM.graphic = scene.labelMusic
   lblM.centrify(hor = HAlign.right, ver = VAlign.top)
-  lblM.pos = musicPos - (8.0, 10.0)
+  lblM.pos = musicPos - lblOffset
   scene.add lblM
   for i in 0..<VolSteps:
     scene.btnsMusic[i] = newVolButton(
@@ -73,7 +75,25 @@ proc init*(scene: ConfigScene) =
   for i in 0..<VolSteps:
     scene.btnsMusic[i].group = scene.btnsMusic
     scene.add scene.btnsMusic[i]
-  scene.btnsMusic[^1].toggled = true # TODO read config
+  scene.btnsMusic[^1].toggled = true
+
+  # mute
+  scene.btnMuteSound = newMenuButton(
+    (162.0, soundPos.y - 32.0), 2,
+    proc(btn: MenuButton) =
+      muteSound = btn.toggled
+      syncCfg(true),
+    "X")
+  scene.btnMuteSound.toggle = true
+  scene.add scene.btnMuteSound
+  scene.btnMuteMusic = newMenuButton(
+    (162.0, musicPos.y - 32.0), 2,
+    proc(btn: MenuButton) =
+      muteMusic = btn.toggled
+      syncCfg(true),
+    "X")
+  scene.btnMuteMusic.toggle = true
+  scene.add scene.btnMuteMusic
 
   # btnBack
   scene.btnBack = newMenuButton(center + step * 3.0, width,
@@ -90,8 +110,9 @@ proc init*(scene: ConfigScene) =
   scene.add title
 
 
-
 proc free*(scene: ConfigScene) =
+  free scene.btnMuteSound
+  free scene.btnMuteMusic
   free scene.labelSound
   free scene.labelMusic
   free scene.infoText
@@ -105,7 +126,11 @@ proc newConfigScene*(): ConfigScene =
 
 
 method show*(scene: ConfigScene) =
-  discard
+  for i in 0..<VolSteps:
+    scene.btnsSound[i].toggled = (i == sound)
+    scene.btnsMusic[i].toggled = (i == music)
+  scene.btnMuteSound.toggled = muteSound
+  scene.btnMuteMusic.toggled = muteMusic
 
 
 method event*(scene: ConfigScene, event: Event) =
@@ -116,6 +141,14 @@ method event*(scene: ConfigScene, event: Event) =
       colliderOutline = not colliderOutline
     of K_F11:
       showInfo = not showInfo
+    of K_Escape:
+      game.scene = titleScene
+    of K_N:
+      muteSound = not muteSound
+      syncCfg(true)
+    of K_M:
+      muteMusic = not muteMusic
+      syncCfg(true)
     else:
       discard
 

@@ -1,6 +1,7 @@
 import
   nimgame2 / [
     assets,
+    audio,
     gui/button,
     gui/widget,
     input,
@@ -9,6 +10,7 @@ import
     texturegraphic,
     types,
   ],
+  cfg,
   data
 
 
@@ -58,5 +60,12 @@ method onClick*(btn: VolButton, mb = MouseButton.left) =
       if i == btn.value:
         continue
       btn.group[i].toggled = false
-      # TODO set new volume (btn.kind)
+  case btn.kind:
+  of vkSound:
+    sound = btn.value
+    syncCfg(true)
+    discard sfxData["quack_1"].play()
+  of vkMusic:
+    music = btn.value
+    syncCfg(true)
 

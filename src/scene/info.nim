@@ -120,6 +120,8 @@ method event*(scene: InfoScene, event: Event) =
       colliderOutline = not colliderOutline
     of K_F11:
       showInfo = not showInfo
+    of K_Escape:
+      game.scene = titleScene
     else:
       discard
 

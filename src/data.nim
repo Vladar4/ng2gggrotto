@@ -43,6 +43,11 @@ var
   gfxData*: Assets[TextureGraphic]
   sfxData*: Assets[Sound]
   buttonMosaic*: Mosaic
+  # audio
+  muteSound*, muteMusic*: bool
+  sound*: range[0..(VolSteps-1)] = VolSteps div 2
+  music*: range[0..(VolSteps-1)] = VolSteps div 2
+  # controls
   moveUp* = [ScancodeUp, ScancodeW]
   moveDown* = [ScancodeDown, ScancodeS]
   moveLeft* = [ScancodeLeft, ScancodeA]
@@ -78,6 +83,11 @@ proc loadData*() =
   # SFX
   sfxData = newAssets[Sound]("data/sfx",
     proc(file: string): Sound = newSound(file))
+  # TODO read config
+  # sound
+  # music
+  # muteSound
+  # muteMusic
   # Mosaic
   buttonMosaic = newMosaic("data/gui/button.png", (8, 8))
 
