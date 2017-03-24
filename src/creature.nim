@@ -65,19 +65,27 @@ proc dirAvailable*(c: Creature, dir: Direction): bool =
     y = c.mapPos.y
   return case dir:
     of dUp:
-      if ("enemy" in c.tags) and (y < 5): false
+      if ("enemy" in c.tags) and
+         (y < 5) and
+         (c.map.exitU.x == x): false
       elif y < 1: false
       else: c.map.map[y-1][x] < 1
     of dDown:
-      if ("enemy" in c.tags) and (y >= (MapTileHeight - 5)): false
+      if ("enemy" in c.tags) and
+         (y >= (MapTileHeight - 5)) and
+         (c.map.exitD.x == x): false
       elif y >= (MapTileHeight - 1): false
       else: c.map.map[y+1][x] < 1
     of dLeft:
-      if ("enemy" in c.tags) and (x < 5): false
+      if ("enemy" in c.tags) and
+         (x < 5) and
+         (c.map.exitL.y == y): false
       elif x < 1: false
       else: c.map.map[y][x-1] < 1
     of dRight:
-      if ("enemy" in c.tags) and (x >= (MapTileWidth - 5)): false
+      if ("enemy" in c.tags) and
+         (x >= (MapTileWidth - 5)) and
+         (c.map.exitR.y == y): false
       elif x >= (MapTileWidth - 1): false
       else: c.map.map[y][x+1] < 1
     else:
