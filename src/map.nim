@@ -161,7 +161,7 @@ proc generate*(t: var TriadGrid,
                y = MapCenter.h) =
   var choice = TriadsAll - {NONE}
   if (x == MapCenter.w) and (y == MapCenter.h):
-    choice = choice - {U, D, L, R}
+    choice = choice - {U, D, L, R, UD, LR, UL, UR, DL, DR}
 
   # top
   if y > 0:
