@@ -2,6 +2,7 @@ import
   random,
   nimgame2 / [
     assets,
+    entity,
   ],
   creature,
   data,
@@ -16,6 +17,7 @@ type
 proc init*(e: Enemy, id: int, mapPos: MapPos, map: Map) =
   Creature(e).init gfxData["enemy" & $id], mapPos, map
   e.tags.add "enemy"
+  e.changeFramerate(e.framerate)
   e.id = id
 
 
