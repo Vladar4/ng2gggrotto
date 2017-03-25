@@ -5,6 +5,7 @@ import
     audio,
     nimgame,
     entity,
+    input,
     scene,
     settings,
     textgraphic,
@@ -149,22 +150,22 @@ proc newMainScene*(): MainScene =
 method event*(scene: MainScene, event: Event) =
   scene.eventScene event
   if event.kind == KeyDown:
-    case event.key.keysym.sym:
-    of K_X:
+    case event.key.keysym.scancode:
+    of ScancodeX:
       if gamePaused:
         gamePaused = false
         game.scene = titleScene
-    of K_Escape, K_P:
+    of ScancodeEscape, ScancodeP:
       gamePaused = not gamePaused
       scene.pause.visible = gamePaused
-    of K_F10:
+    of ScancodeF10:
       colliderOutline = not colliderOutline
-    of K_F11:
+    of ScancodeF11:
       showInfo = not showInfo
-    of K_N:
+    of ScancodeN:
       muteSound = not muteSound
       syncCfg(true)
-    of K_M:
+    of ScancodeM:
       muteMusic = not muteMusic
       syncCfg(true)
     else:

@@ -3,6 +3,7 @@ import
     assets,
     audio,
     entity,
+    input,
     nimgame,
     scene,
     settings,
@@ -130,18 +131,18 @@ method show*(scene: TitleScene) =
 method event*(scene: TitleScene, event: Event) =
   scene.eventScene event
   if event.kind == KeyDown:
-    case event.key.keysym.sym:
-    of K_F10:
+    case event.key.keysym.scancode:
+    of ScancodeF10:
       colliderOutline = not colliderOutline
-    of K_F11:
+    of ScancodeF11:
       showInfo = not showInfo
-    of K_N:
+    of ScancodeN:
       muteSound = not muteSound
       syncCfg(true)
-    of K_M:
+    of ScancodeM:
       muteMusic = not muteMusic
       syncCfg(true)
-    of K_Return, K_Space:
+    of ScancodeReturn, ScancodeSpace:
       game.scene = newMainScene()
     else:
       discard

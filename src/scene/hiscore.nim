@@ -94,8 +94,8 @@ proc newHiscoreScene*(): HiscoreScene =
 method event*(scene: HiscoreScene, event: Event) =
   scene.eventScene event
   if event.kind == KeyDown:
-    case event.key.keysym.sym:
-    of K_F11:
+    case event.key.keysym.scancode:
+    of ScancodeF11:
       showInfo = not showInfo
     else:
       discard
