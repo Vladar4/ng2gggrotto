@@ -36,7 +36,7 @@ proc kill*(f: Follower) =
     f.tween.stop()
   f.play("death", 2, true)
   dec scoreMultiplier
-  if not sfxData["death_2"].playing:
+  if (not sfxData["death_1"].playing) and (not sfxData["death_2"].playing):
     discard sfxData["death_2"].play()
 
 
