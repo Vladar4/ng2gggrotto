@@ -74,13 +74,11 @@ proc init*(scene: HiscoreScene) =
 method show*(scene: HiscoreScene) =
   scene.scoreText.lines = ["YOUR SCORE: " & $playerScore]
   if scene.victory:
-    scene.scoreText.lines = [scene.scoreText.lines[0] & "(x2 VICTORY BONUS)"]
+    scene.scoreText.lines = [scene.scoreText.lines[0] & " (x2 VICTORY BONUS)"]
   scene.score.centrify(ver = VAlign.bottom)
   scene.winscreen.visible = scene.victory
   scene.losescreen.visible = not scene.victory
   TextField(scene.input.graphic).activate()
-  if scene.victory:
-    discard sfxData["victory"].play()
 
 
 proc free*(scene: HiscoreScene) =

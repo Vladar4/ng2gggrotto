@@ -301,6 +301,7 @@ method update*(scene: MainScene, elapsed: float) =
     # double points on victory
     if playerGoal >= playerTargetGoal:
       playerScore *= 2
+      discard sfxData["victory"].play()
     let hi = checkForHiscore(uint(playerScore))
     if hi >= 0:
       HiscoreScene(hiscoreScene).victory = (playerLives >= 0)
