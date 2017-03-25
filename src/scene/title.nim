@@ -1,6 +1,7 @@
 import
   nimgame2 / [
     assets,
+    audio,
     entity,
     nimgame,
     scene,
@@ -92,7 +93,6 @@ proc init*(scene: TitleScene) =
   scene.add title
 
 
-
 proc free*(scene: TitleScene) =
   free scene.infoText
   free scene.scoreText
@@ -123,6 +123,8 @@ method show*(scene: TitleScene) =
     hiscores[8].name.toString & " " & $hiscores[8].score,
     hiscores[9].name.toString & " " & $hiscores[9].score
   ]
+  if not musicPlaying():
+    discard playlist.play()
 
 
 method event*(scene: TitleScene, event: Event) =
@@ -147,6 +149,7 @@ method event*(scene: TitleScene, event: Event) =
 
 method update*(scene: TitleScene, elapsed: float) =
   scene.updateScene elapsed
+  update playlist
   if scene.exit:
     gameRunning = false
 

@@ -2,6 +2,7 @@ import
   random,
   nimgame2 / [
     assets,
+    audio,
     nimgame,
     entity,
     scene,
@@ -292,6 +293,7 @@ method update*(scene: MainScene, elapsed: float) =
     DefaultSpeed)
 
   scene.updateScene elapsed
+  update playlist
 
   # game ended
   if playerLives < 0 or

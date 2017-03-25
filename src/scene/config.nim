@@ -1,6 +1,7 @@
 import
   nimgame2 / [
     assets,
+    audio,
     entity,
     gui/widget,
     nimgame,
@@ -153,4 +154,9 @@ method event*(scene: ConfigScene, event: Event) =
       syncCfg(true)
     else:
       discard
+
+
+method update*(scene: ConfigScene, elapsed: float) =
+  scene.updateScene elapsed
+  update playlist
 

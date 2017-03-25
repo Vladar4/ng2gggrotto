@@ -80,7 +80,7 @@ proc newHiscoreScene*(): HiscoreScene =
   init result
 
 
-method event(scene: HiscoreScene, event: Event) =
+method event*(scene: HiscoreScene, event: Event) =
   scene.eventScene event
   if event.kind == KeyDown:
     case event.key.keysym.sym:
@@ -116,4 +116,10 @@ method event(scene: HiscoreScene, event: Event) =
   elif event.kind == TextInput:
     TextField(scene.input.graphic).add $event.text.text
     scene.input.centrify()
+
+
+method update*(scene: HiscoreScene, elapsed: float) =
+  scene.updateScene elapsed
+  update playlist
+
 
