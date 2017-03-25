@@ -52,7 +52,7 @@ var
   moveUp* = [ScancodeUp, ScancodeW]
   moveDown* = [ScancodeDown, ScancodeS]
   moveLeft* = [ScancodeLeft, ScancodeA]
-  moveRight* = [ScancodeRight, ScancodeR]
+  moveRight* = [ScancodeRight, ScancodeD]
   # amount
   ItemsAmount* = 32
   GoalsAmount* = 4
