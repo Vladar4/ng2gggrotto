@@ -298,6 +298,9 @@ method update*(scene: MainScene, elapsed: float) =
   # game ended
   if playerLives < 0 or
       (playerGoal >= playerTargetGoal):
+    # double points on victory
+    if playerGoal >= playerTargetGoal:
+      playerScore *= 2
     let hi = checkForHiscore(uint(playerScore))
     if hi >= 0:
       HiscoreScene(hiscoreScene).victory = (playerLives >= 0)

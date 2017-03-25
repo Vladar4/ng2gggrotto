@@ -18,7 +18,8 @@ import
 
 type
   HiscoreScene* = ref object of Scene
-    headerText: TextGraphic
+    headerText, scoreText: TextGraphic
+    score: Entity
     victory*: bool
     input*: Entity
     index*: int
@@ -27,7 +28,15 @@ type
 
 proc init*(scene: HiscoreScene) =
   init Scene(scene)
-  # title
+  # score
+  scene.scoreText = newTextField defaultFont
+  scene.scoreText.lines = [""]
+  scene.score = newEntity()
+  scene.score.graphic = scene.scoreText
+  scene.score.pos = (
+    game.size.w / 2, game.size.h / 4)
+  scene.add scene.score
+  # header
   let header = newEntity()
   scene.headerText = newTextGraphic defaultFont
   scene.headerText.lines = ["ENTER YOUR NAME"]
@@ -63,6 +72,10 @@ proc init*(scene: HiscoreScene) =
 
 
 method show*(scene: HiscoreScene) =
+  scene.scoreText.lines = ["YOUR SCORE: " & $playerScore]
+  if scene.victory:
+    scene.scoreText.lines = [scene.scoreText.lines[0] & "(x2 VICTORY BONUS)"]
+  scene.score.centrify(ver = VAlign.bottom)
   scene.winscreen.visible = scene.victory
   scene.losescreen.visible = not scene.victory
   TextField(scene.input.graphic).activate()
