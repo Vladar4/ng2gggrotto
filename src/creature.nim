@@ -1,6 +1,5 @@
 import
   nimgame2 / [
-    collider,
     entity,
     nimgame,
     texturegraphic,
