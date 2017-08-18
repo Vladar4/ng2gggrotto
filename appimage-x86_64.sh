@@ -34,6 +34,7 @@ echo "[Desktop Entry]
 Type=Application
 Name=$NAME
 Exec=$PROJ
+Categories=Game;
 Icon=$PROJ" > "$PROJ.desktop"
 
 wget -O AppRun https://github.com/probonopd/AppImageKit/releases/download/8/AppRun-x86_64
