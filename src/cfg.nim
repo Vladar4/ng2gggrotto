@@ -11,7 +11,7 @@ const
     Volume Volume.high div 8,
     Volume.high div 4,
     Volume.high div 2,
-    Volume (Volume.high.float / 1.5),
+    Volume(Volume.high.float / 1.5),
     Volume.high]
 
 
